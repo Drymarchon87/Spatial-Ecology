@@ -168,25 +168,25 @@ RM.mod.Season <- lmer(Home_Range_100mcp~Environment+Season+Sex+N+(1|Gila),
 # anova(RM.mod.Season)
 # summary(RM.mod.Season)
 # 
-# # marginal.season <- lsmeans(RM.mod.Season, 
-# #                    ~ Environment)
-# # marginal.season
-# 
-# ref.season2 <- lsmeans(RM.mod.Season, specs = c("Season","Environment"))
-# # ref.season2
-# ref_dfseason2 <- as.data.frame(summary(ref.season2))
-# pd.RMS <- position_dodge(0.1)
-# g4season2 <- ggplot(ref_dfseason2, aes(x=Season, y=lsmean,group=Environment, colour=Environment))+
-#   geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=pd.RMS) +
-#   geom_line(position=pd.RMS)+
-#   geom_point(position=pd.RMS)+theme_classic()+ggtitle("Adjusted Seasonal Home Ranges")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
-# # LSMgraphseason<-print(g4season)
-# g4season2<-g4season2 + theme(legend.title = element_blank(),
-#                            legend.justification=c(0,1),
-#                            legend.position=c(0.05, 0.95),
-#                            legend.background = element_blank(),
-#                            legend.key = element_blank(),
-#                            legend.box.background = element_rect(colour = "black"))
+# marginal.season <- lsmeans(RM.mod.Season,
+#                    ~ Environment)
+# marginal.season
+
+ref.season2 <- lsmeans(RM.mod.Season, specs = c("Season","Environment"))
+# ref.season2
+ref_dfseason2 <- as.data.frame(summary(ref.season2))
+pd.RMS <- position_dodge(0.1)
+g4season2 <- ggplot(ref_dfseason2, aes(x=Season, y=lsmean,group=Environment, colour=Environment))+
+  geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=pd.RMS) +
+  geom_line(position=pd.RMS)+
+  geom_point(position=pd.RMS)+theme_classic()+ggtitle("Adjusted Seasonal Home Ranges")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+# LSMgraphseason<-print(g4season)
+g4season2<-g4season2 + theme(legend.title = element_blank(),
+                           legend.justification=c(0,1),
+                           legend.position=c(0.05, 0.95),
+                           legend.background = element_blank(),
+                           legend.key = element_blank(),
+                           legend.box.background = element_rect(colour = "black"))
 g4season2+scale_x_discrete(limits= c("Emergence","Dry","Monsoon","Post_Monsoon"))
 # ggsave("outputs/LSM_Season.pdf")
 ```
@@ -393,7 +393,7 @@ Rocks
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 # Ref.Emergence <- slice()
 Rocks <- subset(Refugia, COVERTYPE == "Rocks")
-View(Rocks)
+# View(Rocks)
 
 Rocks_mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Rocks)
 summary(Rocks_mod)
@@ -410,7 +410,7 @@ pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "none")
 Burrow
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 Burrow <- subset(Refugia, COVERTYPE == "Burrow")
-View(Burrow)
+# View(Burrow)
 
 Burrow.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Burrow)
 summary(Burrow.mod)
@@ -427,7 +427,7 @@ pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "none")
 Midden
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 Midden <- subset(Refugia, COVERTYPE == "Midden")
-View(Midden)
+# View(Midden)
 
 Midden.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Midden)
 summary(Midden.mod)
@@ -437,22 +437,6 @@ summary(Midden.mod)
 attach(Midden)
 
 pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "none")
-```
-
-
-
-Mean proportional use of refuge types by Gila Monsters based on sex across seasons.
-
-```{r}
-Rocks_Means <- Rocks %>%
-        group_by(COVERTYPE,SEX) %>%
-        summarise(AVG_PROP_YR_LIZ = mean(AVG_PROP_YR_LIZ))
-Rocks_Means
-View(Rocks)
-
-# library(Rmisc)
-# Ref_Means <- summarySE(Refugia, measurevar="AVG_PROP_YR_LIZ", groupvars=c("SEX","COVERTYPE"))
-
 ```
 
 
