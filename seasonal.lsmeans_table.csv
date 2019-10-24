@@ -1,0 +1,9 @@
+﻿Season ,Environment,N Individuals,lsmean,SE,df,lower.CL,upper.CL
+Emergence,nonsubsidized,9,2.81,2.52,96,-2.19,7.81
+Dry,nonsubsidized,12,23.72,2.3,96,19.15,28.28
+Monsoon,nonsubsidized,13,23.65,2.21,96,19.27,28.04
+Post_Monsoon,nonsubsidized,11,0.69,2.4,96,-4.07,5.46
+Emergence,subsidized,9,2.1,2.65,96,-3.17,7.37
+Dry,subsidized,17,13.04,1.93,96,9.2,16.87
+Monsoon,subsidized,18,10.56,1.88,96,6.83,14.29
+Post_Monsoon,subsidized,14,2.99,2.13,96,-1.24,7.21

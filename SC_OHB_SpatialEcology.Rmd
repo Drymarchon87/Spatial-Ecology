@@ -1,0 +1,459 @@
+---
+title: "Spatial Ecology Gila Monsters in a Subsidized Environment"
+author: "M. Pierson"
+date: "28 August 2019"
+output:
+  html_notebook: default
+  pdf_document: default
+  fig_caption: yes
+---
+Overview of the spatial ecology of Gila Monsters (*Heloderma suspectum*) at Stone Canyon Golf Club as a subsidized population vs. Owl Head Buttes which represents the unsubsized natural population. 
+
+```{r setup, include=FALSE}
+# LOAD PACKAGES 
+
+library(tidyverse) 
+library(knitr) #  make tables
+library(leaflet)
+library(lme4)
+library(lmerTest)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(ggfortify)
+library(ordinal)
+library(lsmeans)
+#knitr::opts_chunk$set(fig.width = 5, fig.asp = 1/3) #force figures to be certain size and aspect ratio
+```
+
+Compared home range sizes of *Heloderma suspectum* between two populations. One represented a subsidized population at Stone Canyon Golf Club and the other at Owl Head Buttes representing the unsubsidized population. Stone Canyon is located in Oro Valley on the north end of Tucson, Arizona.  Owl Head Buttes is located about 17 km straight line distance north west from Stone Canyon. Data at Owl Head was collected from 2000 - 2002, while fixes were collected from 2007 - 2013 at Stone Canyon. We Calculated minimum convex polygons using both 95 percent and 100 percent of the locations for each lizard.
+
+<span style="color:blue">Summary of home range size.</span>
+```{r Home range sizes of Stone Canyon and Owl Head Buttes by year., echo=FALSE, message=FALSE, warning=FALSE}
+GM_table <- read_csv("GM_table.csv")
+kable(GM_table,format="pandoc", caption='Table 1. Home range sizes of Stone Canyon and Owl head Buttes using both 95 percent and 100 percent MCPs.')
+
+```
+
+
+<span style="color:blue">Gila Monster Home Range Sizes at Stone Canyon vs. Owl Head Buttes.</span>
+
+Plot of the Stone Canyon population vs. the Owl Head Buttes population.  
+```{r Stone Canyon Vs. Owl Head Buttes, echo=FALSE, message=FALSE, warning=FALSE}
+year <- read_csv("GM_Consolidated_ByYear.csv")
+
+# quick plot
+Graph1<-ggplot(year,aes(x=N100,y=Home_Range_100mcp,colour=Environment))+
+  geom_point()+scale_colour_manual(values = c(subsidized="cyan3",nonsubsidized="indianred1"))+
+  xlab("Number of Relocations")+ylab("Area (ha) using 95% MCP")+
+  geom_smooth(method = "lm",se=FALSE)+
+  theme_bw()
+
+Graph1<-Graph1+theme(axis.title=element_text(size = 14))
+
+# legend at top-left, inside the plot
+Graph1 + theme(legend.title = element_blank(),
+               legend.justification=c(0,1),
+               legend.position=c(0.05, 0.95),
+               legend.background = element_blank(),
+               legend.key = element_blank(),
+               legend.box.background = element_rect(colour = "black"))
+
+# dir.create("outputs") # create a new folder to hold the output files
+# ggsave("outputs/SC_OHB_plot.pdf")
+```
+
+
+
+<span style="color:red">Raw Means By Year.</span>
+```{r}
+# YR_GRP_Means <- year %>% 
+#         group_by(Environment,Sex) %>% 
+#         summarise(Home_Range_100mcp = mean(Home_Range_100mcp))
+# YR_GRP_Means
+
+library(Rmisc)
+YR_GRP_Means <- summarySE(year, measurevar="Home_Range_100mcp", groupvars=c("Environment","Sex"))
+
+YR_GRP_Means
+```
+
+
+
+```{r}
+# SE <- sd(year$Home_Range_100mcp, na.rm=TRUE) /  
+#    sqrt(length(year$Home_Range_100mcp[!is.na(year$ Home_Range_100mcp)])) 
+
+# SE <- sd(YR_GRP_Means$Home_Range_100mcp, na.rm=TRUE) /  
+#    sqrt(length(YR_GRP_Means$Home_Range_100mcp[!is.na(YR_GRP_Means$ Home_Range_100mcp)])) 
+
+# ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,fill=Environment))+geom_bar(stat='identity',position='dodge')+geom_errorbar(aes(ymin=Home_Range_100mcp-SE, ymax=Home_Range_100mcp+SE), width=.1,position=position_dodge(.9))
+
+Raw.YearHR<-ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,color=Environment))+geom_point(position=position_dodge(.1))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se), width=.1,position=position_dodge())+ggtitle("Raw Overall Home Ranges by Sex")+xlab("Sex")+ylab("Area (ha) using 100% MCP")+
+  theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+
+Raw.YearHR + theme(legend.title = element_blank(),
+                     legend.justification=c(0,1),
+                     legend.position=c(0.05, 0.95),
+                     legend.background = element_blank(),
+                     legend.key = element_blank(),
+                     legend.box.background = element_rect(colour = "black"))
+
+# geom_point(position=pd_RM)+theme_classic()
+```
+
+
+
+<span style="color:blue">Repeated measures ANOVA for year.</span>
+```{r Repeated Measures ANOVA YEAR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Get p-values from mixed model F values:
+library(lme4)
+library(readr)
+year <- read_csv("GM_Consolidated_ByYear.csv")
+
+lmemodel.year<-lmer(Home_Range_100mcp~Environment+Year+Sex+N100+(1|Gila),data = year)
+summary(lmemodel.year)
+```
+
+<span style="color:blue">Directional means of home range using the least square means based on sex between Stone Canyon and Owl Head Buttes.</span>
+```{r Directional Means, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(ordinal)
+library(lsmeans)
+
+RMmod.year<-lmer(Home_Range_100mcp~Environment+N100+Year+Sex+N100+(1|Gila),data = year)
+
+RM.marginal <- lsmeans(RMmod.year, 
+                    ~ Environment)
+# RM.marginal
+
+## CATAGORIZE LSM GRAPH BY SEX BETWEEN ENVIRONMENT:
+refRM_sex <- lsmeans(RMmod.year, specs = c("Sex","Environment"))
+# refRM_sex
+ref_dfRM_sex <- as.data.frame(summary(refRM_sex))
+pd_RM <- position_dodge(0.1)
+g4RM_sex <- ggplot(ref_dfRM_sex, aes(x=Sex, y=lsmean,group=Environment, colour=Environment))+
+  geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=pd_RM) +
+  geom_point(position=pd_RM)+theme_classic()+ggtitle("Adjusted Overall Home Ranges by Sex")+xlab("Sex")+ylab("Area (ha) using 100% MCP")+
+  theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+# RM_LSMgraph_sex<-print(g4RM_sex)
+# ggsave("outputs/LSM_Year_plot.pdf")
+g4RM_sex + theme(legend.title = element_blank(),
+                     legend.justification=c(0,1),
+                     legend.position=c(0.05, 0.95),
+                     legend.background = element_blank(),
+                     legend.key = element_blank(),
+                     legend.box.background = element_rect(colour = "black"))
+# ggsave("outputs/LSM_Year_plot.pdf")
+```
+
+```{r Table of Least Square Means, echo=FALSE, message=FALSE, warning=FALSE}
+kable(ref_dfRM_sex, format = "pandoc", caption = 'Table 2. Least Square means of male vs. female home ranges at Stone Canyon and Owl Head Buttes.') 
+```
+ 
+  
+<span style="color:blue">Seasonal Home Range.</span>
+
+Home range analysis broken down by five seasons; Emergence, Dry, Monsoon, Post Monsoon. The start of emergence was defined by when movement patterns increased from none/minimal to the start of high activity. Effort was taken to match as closely as possible to the Owl Head Buttes emergence date interval. Monsoon season was adjusted using NOAA climate data. The start of was defined when the mean dew point temperatures of three consecutive days were greater than 55 degrees. 
+
+Scaling home range analyses by seasonal estimates reduces the number or locations for each lizard. 100 percent MCPs were used for seasonal home range analyses to avoid any further reduction of locations for each estimation. 
+
+
+```{r LSM for Season, echo=FALSE, message=FALSE, warning=FALSE}
+library(ordinal)
+library(lsmeans)
+seasonal<-read.csv("SC_Seasonal_Data.csv")
+
+RM.mod.Season <- lmer(Home_Range_100mcp~Environment+Season+Sex+N+(1|Gila),
+                      data=seasonal)
+# anova(RM.mod.Season)
+# summary(RM.mod.Season)
+# 
+# # marginal.season <- lsmeans(RM.mod.Season, 
+# #                    ~ Environment)
+# # marginal.season
+# 
+# ref.season2 <- lsmeans(RM.mod.Season, specs = c("Season","Environment"))
+# # ref.season2
+# ref_dfseason2 <- as.data.frame(summary(ref.season2))
+# pd.RMS <- position_dodge(0.1)
+# g4season2 <- ggplot(ref_dfseason2, aes(x=Season, y=lsmean,group=Environment, colour=Environment))+
+#   geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=pd.RMS) +
+#   geom_line(position=pd.RMS)+
+#   geom_point(position=pd.RMS)+theme_classic()+ggtitle("Adjusted Seasonal Home Ranges")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+# # LSMgraphseason<-print(g4season)
+# g4season2<-g4season2 + theme(legend.title = element_blank(),
+#                            legend.justification=c(0,1),
+#                            legend.position=c(0.05, 0.95),
+#                            legend.background = element_blank(),
+#                            legend.key = element_blank(),
+#                            legend.box.background = element_rect(colour = "black"))
+g4season2+scale_x_discrete(limits= c("Emergence","Dry","Monsoon","Post_Monsoon"))
+# ggsave("outputs/LSM_Season.pdf")
+```
+
+```{r Table of Seasonal Least Square Means, echo=FALSE, message=FALSE, warning=FALSE}
+lsmean.seasonal<-read.csv("seasonal.lsmeans_table.csv")
+kable(lsmean.seasonal, format = "pandoc", caption = 'Table 3. Least Square Means of seasonal home ranges at Stone Canyon and Owl Head Buttes.')
+```
+
+<span style="color:blue">Repeated measures ANOVA for Seasons.</span>
+```{r Repeated Measures ANOVA Seasonal, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+library(lme4)
+library(readr)
+library(lmerTest)
+# seasonal<-read.csv("SC_Seasonal_Data.csv")
+
+RM.seasonal<-lmer(Home_Range_100mcp~Environment+Season+Sex+N+(1|Gila),data = seasonal)
+summary(RM.seasonal)
+
+```
+
+
+<span style="color:blue">Gila Monster Home Range Overlap of 100% MCPs.</span>
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Male.MCP <- rbind(M67_MCP,M69_MCP,M255_MCP,M215_MCP,M14_MCP,M119_MCP,M112_MCP)
+# mapview(Male.MCP)
+Female.MCP <- rbind(F66_MCP,F36_MCP,F252_MCP,F214_MCP,F200_MCP,F147_MCP,F146_MCP,F137_MCP,
+                    F135_MCP,F114_MCP,F104_MCP)
+# mapview(Female.MCP)
+
+mapview(Male.MCP, legend=F, zcol="id", col.regions = c("blue"), alpha.regions=0.3) + 
+  mapview(Female.MCP, legend=F, zcol = "id", col.regions = c("red"), alpha.regions=0.3)
+```
+Figure 4. Home Range overlap by sex of 100% MCPs at Stone Canyon. Red polygons represent female lizards, and blue represents male lizards. 
+
+The Stone Canyon population seems to exhibit greater female-female overlap as well as considerable overlap of male-female home ranges. There appears to be limited male-male overlap, with occurance happening in only two male-male home range polygons. This finding is in contrast to the Owl Head buttes study which revealed that there was a large degree of overlap among male-female and male-male overlaps (Table 4). Gillardo concluded that, in their study, the high degree of overlap in males-males interactions may be due to having larger home ranges for mate searching activities. Males may have and increased home range size to maximize their access to multiple females. She concluded that the lack of female-female overlap may be due to smaller home range sizes. 
+
+At Stone Canyon, males have reduced home range sizes (Table 2; Fig. 2). However, males still retain home range overlap with multiple females while having reduced contact with other males. This may be in response to nutrient subsidies that reduce the need to have expanded home range sizes for foraging activities for both males and females. There may also be a higher density of females as a response to resource availability and reduced range requirements. Males are not forced to expand home ranges for mate searching to the extant that individuals at Owl Head Buttes may be subject to. 
+
+Table 4. Home range overlap of Gila Monsters at the nutrient subsidized site. Male-male overlaps only occured between two pairs of males: M14-M69 and M119-M215 at 0.5 ha. and 19.5 ha. respectively and were therefore not included in the table. 
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+OL_Table<-read.csv("OverLap_Table.csv")
+
+kable(OL_Table, format = "pandoc", caption = 'Home range overlap of Stone Canyon Gila Monsters using 100% MCPs.')
+```
+
+
+<span style="color:blue">Gila Monster Home Range Shifts of 100% MCPs.</span>
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# mcp.shift.TEST4 <- ggplot() +
+#   geom_polygon(data=F104_mcp.08T, aes(x=F104_mcp.08T$long, y=F104_mcp.08T$lat),
+#                alpha=0.1,colour="black",linetype=2) +
+#   geom_polygon(data=F104_mcp.09T, aes(x=F104_mcp.09T$long, y=F104_mcp.09T$lat),
+#                alpha=0.1,colour="black",linetype=2) +
+#   geom_polygon(data=F114_mcp.08T, aes(x=F114_mcp.08T$long, y=F114_mcp.08T$lat),
+#                alpha=0.1,colour="black",linetype=3) +
+#   geom_polygon(data=F114_mcp.09T, aes(x=F114_mcp.09T$long, y=F114_mcp.09T$lat),
+#                alpha=0.1,colour="black",linetype=3) +
+#   geom_polygon(data=F114_mcp.10T, aes(x=F114_mcp.10T$long, y=F114_mcp.10T$lat),
+#                alpha=0.1,colour="black",linetype=3) +
+#   geom_polygon(data=F114_mcp.11T, aes(x=F114_mcp.11T$long, y=F114_mcp.11T$lat),
+#                alpha=0.1,colour="black",linetype=3) +
+#   geom_polygon(data=F114_mcp.12T, aes(x=F114_mcp.12T$long, y=F114_mcp.12T$lat),
+#                alpha=0.1,colour="black",linetype=3) +
+#   geom_polygon(data=F137_mcp.09T, aes(x=F137_mcp.09T$long, y=F137_mcp.09T$lat),
+#                alpha=0.1,colour="black",linetype=4) +
+#   geom_polygon(data=F137_mcp.10T, aes(x=F137_mcp.10T$long, y=F137_mcp.10T$lat),
+#                alpha=0.1,colour="black",linetype=4) +
+#   geom_polygon(data=F137_mcp.11T, aes(x=F137_mcp.11T$long, y=F137_mcp.11T$lat),
+#                alpha=0.1,colour="black",linetype=4) +
+#   geom_polygon(data=F147_mcp.09T, aes(x=F147_mcp.09T$long, y=F147_mcp.09T$lat),
+#                alpha=0.1,colour="red",linetype=1) +
+#   geom_polygon(data=F147_mcp.10T, aes(x=F147_mcp.10T$long, y=F147_mcp.10T$lat),
+#                alpha=0.1,colour="red",linetype=1) +
+#   geom_polygon(data=F147_mcp.11T, aes(x=F147_mcp.11T$long, y=F147_mcp.11T$lat),
+#                alpha=0.1,colour="red",linetype=1) +
+#   geom_polygon(data=F147_mcp.12T, aes(x=F147_mcp.12T$long, y=F147_mcp.12T$lat),
+#                alpha=0.1,colour="red",linetype=1) +
+#   geom_polygon(data=F36_mcp.08T, aes(x=F36_mcp.08T$long, y=F36_mcp.08T$lat),
+#                alpha=0.1,colour="black",linetype=6) +
+#   geom_polygon(data=F36_mcp.09T, aes(x=F36_mcp.09T$long, y=F36_mcp.09T$lat),
+#                alpha=0.1,colour="black",linetype=6) +
+#   geom_polygon(data=F36_mcp.10T, aes(x=F36_mcp.10T$long, y=F36_mcp.10T$lat),
+#                alpha=0.1,colour="black",linetype=6) +
+#   geom_polygon(data=F36_mcp.11T, aes(x=F36_mcp.11T$long, y=F36_mcp.11T$lat),
+#                alpha=0.1,colour="black",linetype=6) +
+#   geom_polygon(data=F36_mcp.12T, aes(x=F36_mcp.12T$long, y=F36_mcp.12T$lat),
+#                alpha=0.1,colour="black",linetype=6) +
+#   geom_polygon(data=F66_mcp.08T, aes(x=F66_mcp.08T$long, y=F66_mcp.08T$lat),
+#                alpha=0.1,colour="black",linetype=1) +
+#   geom_polygon(data=F66_mcp.09T, aes(x=F66_mcp.09T$long, y=F66_mcp.09T$lat),
+#                alpha=0.1,colour="black",linetype=1) +
+#   geom_polygon(data=F66_mcp.10T, aes(x=F66_mcp.10T$long, y=F66_mcp.10T$lat),
+#                alpha=0.1,colour="black",linetype=1) +
+#   geom_polygon(data=M119_mcp.08T, aes(x=M119_mcp.08T$long, y=M119_mcp.08T$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=M119_mcp.09T, aes(x=M119_mcp.09T$long, y=M119_mcp.09T$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=M119_mcp.10T, aes(x=M119_mcp.10T$long, y=M119_mcp.10T$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=M112_mcp.07T, aes(x=M112_mcp.07T$long, y=M112_mcp.07T$lat),
+#                alpha=0.1,colour="blue",linetype=3) +
+#   geom_polygon(data=M112_mcp.09T, aes(x=M112_mcp.09T$long, y=M112_mcp.09T$lat),
+#                alpha=0.1,colour="blue",linetype=3) +
+#   geom_polygon(data=M112_mcp.10T, aes(x=M112_mcp.10T$long, y=M112_mcp.10T$lat),
+#                alpha=0.1,colour="blue",linetype=3) +
+#   # geom_polygon(data=M69_mcp.09T, aes(x=M69_mcp.09T$long, y=M69_mcp.09T$lat),
+#   #              alpha=0.1,colour="black") +
+#   # geom_polygon(data=M69_mcp.10T, aes(x=M69_mcp.10T$long, y=M69_mcp.10T$lat),
+#   #              alpha=0.1,colour="black") +
+#   # geom_polygon(data=M215_mcp.11T, aes(x=M215_mcp.11T$long, y=M215_mcp.11T$lat),
+#   #              alpha=0.1,colour="black") +
+#   # geom_polygon(data=M215_mcp.12T, aes(x=M215_mcp.12T$long, y=M215_mcp.12T$lat),
+#   #              alpha=0.1,colour="black") +
+#   theme_bw() +labs(x="Easting (m)", y="Northing (m)",title="Yearly Home Range Shifts") +
+#   theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5))
+
+mcp.shift.TEST4
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# mcp.shift.TEST5 <- ggplot() +
+#   geom_polygon(data=F114_mcp.EMT, aes(x=F114_mcp.EMT$long, y=F114_mcp.EMT$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=F114_mcp.DRYT, aes(x=F114_mcp.DRYT$long, y=F114_mcp.DRYT$lat),
+#                alpha=0.1,colour="red",linetype=3) +
+#   geom_polygon(data=F114_mcp.MONT, aes(x=F114_mcp.MONT$long, y=F114_mcp.MONT$lat),
+#                alpha=0.1,colour="green",linetype=4) +
+#   geom_polygon(data=F114_mcp.PMT, aes(x=F114_mcp.PMT$long, y=F114_mcp.PMT$lat),
+#                alpha=0.1,colour="black",linetype=5) +
+#   geom_polygon(data=F137_mcp.EMT, aes(x=F137_mcp.EMT$long, y=F137_mcp.EMT$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=F137_mcp.DRYT, aes(x=F137_mcp.DRYT$long, y=F137_mcp.DRYT$lat),
+#                alpha=0.1,colour="red",linetype=3) +
+#   geom_polygon(data=F137_mcp.MONT, aes(x=F137_mcp.MONT$long, y=F137_mcp.MONT$lat),
+#                alpha=0.1,colour="green",linetype=4) +
+#   geom_polygon(data=F137_mcp.PMT, aes(x=F137_mcp.PMT$long, y=F137_mcp.PMT$lat),
+#                alpha=0.1,colour="black",linetype=5) +
+#   geom_polygon(data=F147_mcp.EMT, aes(x=F147_mcp.EMT$long, y=F147_mcp.EMT$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=F147_mcp.DRYT, aes(x=F147_mcp.DRYT$long, y=F147_mcp.DRYT$lat),
+#                alpha=0.1,colour="red",linetype=3) +
+#   geom_polygon(data=F147_mcp.MONT, aes(x=F147_mcp.MONT$long, y=F147_mcp.MONT$lat),
+#                alpha=0.1,colour="green",linetype=4) +
+#   geom_polygon(data=F147_mcp.PMT, aes(x=F147_mcp.PMT$long, y=F147_mcp.PMT$lat),
+#                alpha=0.1,colour="black",linetype=5) +
+#   # geom_polygon(data=F252_mcp.EMT, aes(x=F252_mcp.EMT$long, y=F252_mcp.EMT$lat),
+#   #              alpha=0.1,colour="black",linetype=2) +
+#   # geom_polygon(data=F252_mcp.DRYT, aes(x=F252_mcp.DRYT$long, y=F252_mcp.DRYT$lat),
+#   #              alpha=0.1,colour="black",linetype=3) +
+#   # geom_polygon(data=F252_mcp.MONT, aes(x=F252_mcp.MONT$long, y=F252_mcp.MONT$lat),
+#   #              alpha=0.1,colour="black",linetype=4) +
+#   # geom_polygon(data=F252_mcp.PMT, aes(x=F252_mcp.PMT$long, y=F252_mcp.PMT$lat),
+#   #              alpha=0.1,colour="black",linetype=5) +
+#   geom_polygon(data=F36_mcp.EMT, aes(x=F36_mcp.EMT$long, y=F36_mcp.EMT$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=F36_mcp.DRYT, aes(x=F36_mcp.DRYT$long, y=F36_mcp.DRYT$lat),
+#                alpha=0.1,colour="red",linetype=3) +
+#   geom_polygon(data=F36_mcp.MONT, aes(x=F36_mcp.MONT$long, y=F36_mcp.MONT$lat),
+#                alpha=0.1,colour="green",linetype=4) +
+#   geom_polygon(data=F36_mcp.PMT, aes(x=F36_mcp.PMT$long, y=F36_mcp.PMT$lat),
+#                alpha=0.1,colour="black",linetype=5) +
+#   geom_polygon(data=F66_mcp.EMT, aes(x=F66_mcp.EMT$long, y=F66_mcp.EMT$lat),
+#                alpha=0.1,colour="blue",linetype=2) +
+#   geom_polygon(data=F66_mcp.DRYT, aes(x=F66_mcp.DRYT$long, y=F66_mcp.DRYT$lat),
+#                alpha=0.1,colour="red",linetype=3) +
+#   geom_polygon(data=F66_mcp.MONT, aes(x=F66_mcp.MONT$long, y=F66_mcp.MONT$lat),
+#                alpha=0.1,colour="green",linetype=4) +
+#   geom_polygon(data=F66_mcp.PMT, aes(x=F66_mcp.PMT$long, y=F66_mcp.PMT$lat),
+#                alpha=0.1,colour="black",linetype=5) +
+#   theme_bw() +labs(x="Easting (m)", y="Northing (m)",title="Seasonal Home Range Shifts") +
+#   theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5))
+
+mcp.shift.TEST5
+
+```
+
+
+
+<span style="color:blue">Gila Monster Proportion of Refuge Use.</span>
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Refugia <- read.csv('./Refuge_Use/Refugia_Input.csv')
+
+Ref_Ind<-lmer(AVG_PROP_YR_LIZ~COVERTYPE+SEASON+SEX+YEAR+COVERTYPE*SEASON+(1|LIZARDNUMBER),data = Refugia)
+summary(Ref_Ind)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+anova(Ref_Ind)
+```
+
+There is no year effect.
+
+
+
+Run RMANOVA for each season:
+
+Rocks
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# Ref.Emergence <- slice()
+Rocks <- subset(Refugia, COVERTYPE == "Rocks")
+View(Rocks)
+
+Rocks_mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Rocks)
+summary(Rocks_mod)
+```
+
+```{r echo=FALSE}
+attach(Rocks)
+
+pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "none")
+```
+
+
+
+Burrow
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Burrow <- subset(Refugia, COVERTYPE == "Burrow")
+View(Burrow)
+
+Burrow.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Burrow)
+summary(Burrow.mod)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+attach(Burrow)
+
+pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "none")
+```
+
+
+
+Midden
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+Midden <- subset(Refugia, COVERTYPE == "Midden")
+View(Midden)
+
+Midden.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Midden)
+summary(Midden.mod)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+attach(Midden)
+
+pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "none")
+```
+
+
+
+Mean proportional use of refuge types by Gila Monsters based on sex across seasons.
+
+```{r}
+Rocks_Means <- Rocks %>%
+        group_by(COVERTYPE,SEX) %>%
+        summarise(AVG_PROP_YR_LIZ = mean(AVG_PROP_YR_LIZ))
+Rocks_Means
+View(Rocks)
+
+# library(Rmisc)
+# Ref_Means <- summarySE(Refugia, measurevar="AVG_PROP_YR_LIZ", groupvars=c("SEX","COVERTYPE"))
+
+```
+
+
+
