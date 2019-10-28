@@ -90,7 +90,7 @@ kable(YR_GRP_Means, format = "pandoc", caption = 'Raw Group Means of Overall Hom
 
 
 Figure 2. Raw overall mean home ranges between environment and sex.
-```{r Fig. 2 Raw Overal Mean HR (Env,Sex), message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Fig. 2 Raw Overal Mean HR (Env,Sex), message=FALSE, warning=FALSE, paged.print=FALSE, echo=FALSE, message=FALSE}
 # SE <- sd(year$Home_Range_100mcp, na.rm=TRUE) /  
 #    sqrt(length(year$Home_Range_100mcp[!is.na(year$ Home_Range_100mcp)])) 
 
@@ -612,7 +612,7 @@ summary(Ref_Ind)
 anova(Ref_Ind)
 ```
 
-There was no effect of year on refuge use. Performed Mixed Effects RMANOVA for each refuge type, then conducted pairwise comparisons for each refuge type across seasons. For pariwise comparisons, used Bonferonni adjusted p-value.
+There was no effect of year on refuge use. Performed Mixed Effects RMANOVA for each refuge type, then conducted pairwise comparisons for each refuge type across seasons. For post-hoc pariwise comparisons, used Bonferonni adjusted p-value.
                                                                                                                                                                                                
 
 Run RMANOVA for each refuge type and pairwise comparisons across each season:
@@ -625,6 +625,7 @@ Rocks <- subset(Refugia, COVERTYPE == "Rocks")
 
 Rocks_mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Rocks)
 summary(Rocks_mod)
+anova(Rocks_mod)
 ```
 
 ```{r Seasonal Pairwise Comp.: Rocks, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -642,6 +643,7 @@ Burrow <- subset(Refugia, COVERTYPE == "Burrow")
 
 Burrow.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Burrow)
 summary(Burrow.mod)
+anova(Burrow.mod)
 ```
 
 ```{r Seasonal Pairwise Comp.: Burrow, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -659,6 +661,7 @@ Midden <- subset(Refugia, COVERTYPE == "Midden")
 
 Midden.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Midden)
 summary(Midden.mod)
+anova(Midden.mod)
 ```
 
 ```{r Seasonal Pairwise Comp.: Midden, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
@@ -666,7 +669,9 @@ attach(Midden)
 
 pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
 ```
-                                                                                                                                                                                              Table 5. Mean proportinal use of refuge types across easch season by sex.
+                                                                                                
+Analyses suggests that there is an effect of season across all three refuge types, but there is no interaction of sex and season on chosen refuge types (Tables 5-7). After performing post-hoc pairwise comparisons, the proportion of refuge use for rocks was higher in emergence (0.37). This may be due to Gila Monsters prefering more rocky refugia for hibernacula use. However, lizards used rocky refugia in smaller proportions throught the dry, monsoon and post-monsoon seasons(Table 5). During the dry season Gila Monsters exhibited a higher proportion of refuge use in burrows (0.26), but mainted about the same of burrow use throug the monsoon season (Table 6.). Gila Monsters chose midden refuge types in dry and monsoon seasons (0.21 and 0.23 respectively), with the majority midden selection in the monsoon. However, both the burrow and midden refuge types were both used throughtout the dry and monsoon seasons.                                                                                                                                                                                  
+Table 5. Mean proportinal use of refuge types across easch season by sex.
 ```{r Table 5. Proportinal Refuge Use, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 Refuge.Prop<-read.csv("./Refuge_Use/Refuge Prop Table.csv")
 
@@ -678,3 +683,10 @@ Refuge.Sig<-read.csv("./Refuge_Use/Refuge Sig Table.csv")
 
 kable(Refuge.Sig, format = "pandoc", longtable=TRUE,caption = 'Post Hoc Pairwise Comparisons of Refuge Types')
 ```
+                                                                                                                                                                                              Table 7. ANOVA table after conducting Mixed Effects RMANOVA for each refuge type across seasons.
+```{r RM ANOVA table for Refuge Use, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+RM.table<-read.csv("./Refuge_Use/RM ANOVA table Refuge.csv")
+
+kable(RM.table, format = "pandoc", longtable=TRUE,caption = 'ANOVA Table of RM Analysis for Refuge Use')
+```
+
