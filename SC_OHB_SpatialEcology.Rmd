@@ -225,12 +225,12 @@ CRS.SC<-CRS("+proj=utm +zone=12 +ellps=WGS84 +units=m +no_defs")
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 ## Create MCP Polygon for mapview():
 M67_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M69_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M255_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M215_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M14_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M119_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M112_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M69_MCP<-mcp_analysis.POLY('./M69/M69 .csv', percentage= 100)
+M255_MCP<-mcp_analysis.POLY('./M255/M255 .csv', percentage= 100)
+M215_MCP<-mcp_analysis.POLY('./M215/M215 .csv', percentage= 100)
+M14_MCP<-mcp_analysis.POLY('./M14/M14 .csv', percentage= 100)
+M119_MCP<-mcp_analysis.POLY('./M119/M119 .csv', percentage= 100)
+M112_MCP<-mcp_analysis.POLY('./M112/M112 .csv', percentage= 100)
 
 F66_MCP<-mcp_analysis.POLY('./F66/F66 .csv', percentage= 100)
 F36_MCP<-mcp_analysis.POLY('./F36/F36 .csv', percentage= 100)
@@ -245,7 +245,7 @@ F114_MCP<-mcp_analysis.POLY('./F114/F114 .csv', percentage= 100)
 F104_MCP<-mcp_analysis.POLY('./F104/F104 .csv', percentage= 100)
 
 Male.MCP <- rbind(M67_MCP,M69_MCP,M255_MCP,M215_MCP,M14_MCP,M119_MCP,M112_MCP)
-# mapview(Male.MCP)
+
 Female.MCP <- rbind(F66_MCP,F36_MCP,F252_MCP,F214_MCP,F200_MCP,F147_MCP,F146_MCP,F137_MCP,
                     F135_MCP,F114_MCP,F104_MCP)
 
