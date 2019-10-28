@@ -71,7 +71,7 @@ mapview(GM.spdf, cex=.2, zcol="LIZARDNUMBER", col.regions=rainbow(18), legend=F)
 # files <- list.files(path = ".", pattern = "[MF]+[0-9]", full.names = TRUE)
 # 
 # # Set proj.string
-# CRS.SC<-CRS("+proj=utm +zone=12 +ellps=WGS84 +units=m +no_defs")
+CRS.SC<-CRS("+proj=utm +zone=12 +ellps=WGS84 +units=m +no_defs")
 
 # #creating spatial data frame for all points
 # x <- as.data.frame(data$EASTING)
@@ -150,7 +150,13 @@ mapview(GM.spdf, cex=.2, zcol="LIZARDNUMBER", col.regions=rainbow(18), legend=F)
 # Plot spdf of animal locations
 
 M69.df<-read.csv("./M69/M69 .csv")
-
+M67.df<-read.csv("./M67/M67 .csv")
+M255.df<-read.csv("./M255/M255 .csv")
+M215.df<-read.csv("./M215/M215 .csv")
+M14.df<-read.csv("./M14/M14 .csv")
+M119.df<-read.csv("./M119/M119 .csv")
+M112.df<-read.csv("./M112/M112 .csv")
+View(M215.df)
 # Using the function "SpatialPoints" we create an object of class SpatialPoints.
 # We have to specify the coordinates, whereas the bbox is automatically generated.
 # M67.sp <- SpatialPoints(M67.df[,c("EASTING","NORTHING")], proj4string=CRS.SC)
@@ -159,6 +165,12 @@ M69.df<-read.csv("./M69/M69 .csv")
 # plot(M67.sp, axes=TRUE)
 # View(GM.df)
 M69 <- SpatialPointsDataFrame(coords=M69.df[,6:7], data=M69.df[,1:4], proj4string=CRS.SC)
+M67 <- SpatialPointsDataFrame(coords=M67.df[,6:7], data=M67.df[,1:4], proj4string=CRS.SC)
+M255 <- SpatialPointsDataFrame(coords=M255.df[,7:8], data=M255.df[,1:5], proj4string=CRS.SC)
+M215 <- SpatialPointsDataFrame(coords=M215.df[,7:8], data=M215.df[,1:5], proj4string=CRS.SC)
+M14 <- SpatialPointsDataFrame(coords=M14.df[,7:8], data=M14.df[,1:5], proj4string=CRS.SC)
+M119 <- SpatialPointsDataFrame(coords=M119.df[,7:8], data=M119.df[,1:5], proj4string=CRS.SC)
+M112 <- SpatialPointsDataFrame(coords=M112.df[,7:8], data=M112.df[,1:5], proj4string=CRS.SC)
 
 # plot(M67,axes=TRUE)
 
@@ -236,6 +248,13 @@ mcp_analysis("./M67/2007 .csv", percentage=100)
 ####################################################
 
 M67_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M69_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M255_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M215_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M14_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M119_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M112_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+
 M67_MCP
 
 ######################################################################
@@ -287,32 +306,32 @@ kde_analysis.href.plot("./F104/2009 .csv", percentage=95)
 
 ################# looping function################### looping function ################
 
-kde_analysis.href.plot <- function(filename, percentage){
-  data <- read.csv(file = filename)
-  x <- as.data.frame(data$EASTING)
-  y <- as.data.frame(data$NORTHING)
-  xy <- c(x,y)
-  data.proj <- SpatialPointsDataFrame(xy,data, proj4string = CRS.SC)
-  xy <- SpatialPoints(data.proj@coords)
-  kde<-kernelUD(xy, h="href", kern="bivnorm", grid=1000)
-  ver <- getverticeshr(kde, percentage)
-  area <- as.data.frame(round(ver$area,4))
-  .rowNamesDF(area, make.names=TRUE) <- data$YEAR
-  write.table(area,file="KDE_Hectares.csv",
-              append=TRUE,sep=",", col.names=FALSE, row.names=TRUE)
-  kde.points <- cbind((data.frame(data.proj@coords)),data$YEAR)
-  colnames(kde.points) <- c("x","y","year")
-  kde.poly <- fortify(ver, region = "id")
-  units <- grid.text(paste(round(ver$area,2)," ha"), x=0.9,  y=0.95,
-                     gp=gpar(fontface=4, cex=0.9), draw = FALSE)
-  kde.plot <- ggplot() +
-    geom_polygon(data=kde.poly, aes(x=kde.poly$long, y=kde.poly$lat), alpha = 0.5) +
-    geom_point(data=kde.points, aes(x=x, y=y)) + theme_bw() +
-    labs(x="Easting (m)", y="Northing (m)", title=kde.points$year) +
-    theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5)) +
-    annotation_custom(units)
-  kde.plot
-}
+# kde_analysis.href.plot <- function(filename, percentage){
+#   data <- read.csv(file = filename)
+#   x <- as.data.frame(data$EASTING)
+#   y <- as.data.frame(data$NORTHING)
+#   xy <- c(x,y)
+#   data.proj <- SpatialPointsDataFrame(xy,data, proj4string = CRS.SC)
+#   xy <- SpatialPoints(data.proj@coords)
+#   kde<-kernelUD(xy, h="href", kern="bivnorm", grid=1000)
+#   ver <- getverticeshr(kde, percentage)
+#   area <- as.data.frame(round(ver$area,4))
+#   .rowNamesDF(area, make.names=TRUE) <- data$YEAR
+#   write.table(area,file="KDE_Hectares.csv",
+#               append=TRUE,sep=",", col.names=FALSE, row.names=TRUE)
+#   kde.points <- cbind((data.frame(data.proj@coords)),data$YEAR)
+#   colnames(kde.points) <- c("x","y","year")
+#   kde.poly <- fortify(ver, region = "id")
+#   units <- grid.text(paste(round(ver$area,2)," ha"), x=0.9,  y=0.95,
+#                      gp=gpar(fontface=4, cex=0.9), draw = FALSE)
+#   kde.plot <- ggplot() +
+#     geom_polygon(data=kde.poly, aes(x=kde.poly$long, y=kde.poly$lat), alpha = 0.5) +
+#     geom_point(data=kde.points, aes(x=x, y=y)) + theme_bw() +
+#     labs(x="Easting (m)", y="Northing (m)", title=kde.points$year) +
+#     theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5)) +
+#     annotation_custom(units)
+#   kde.plot
+# }
 
 # individual kde with ***href*** run Plot, with change to "percentage"
 #kde_analysis.href.plot("./2008 .csv", percentage=95)
@@ -374,7 +393,7 @@ m3+m4
 #   ver@proj4string<-CRS.SC
 #   area <- as.data.frame(round(ver$area,4))
 #   .rowNamesDF(area, make.names=TRUE) <- data$YEAR
-#   write.table(area,file="KDE_Hectares.csv", 
+#   write.table(area,file="KDE_Hectares.csv",
 #               append=TRUE,sep=",", col.names=FALSE, row.names=TRUE)
 #   kde.points <- cbind((data.frame(data.proj@coords)),data$YEAR)
 #   colnames(kde.points) <- c("x","y","year")
@@ -383,6 +402,7 @@ m3+m4
 #                      gp=gpar(fontface=4, cex=0.9), draw = FALSE)
 #   ver
 # }
+
 ####################  Looping function  ################### Looping function ###############
 ############################################################################################
 
@@ -460,11 +480,11 @@ traj_analysis("2007 .csv")
 #   colnames(relocs_dist) <- "Total Distance"
 #   name <- relocs.df$id[1]
 #   row.names(relocs_dist) <- name
-#   relocs_units <- grid.text(paste(round(relocs_dist,2),"m"), x=0.9, y=0.9, 
+#   relocs_units <- grid.text(paste(round(relocs_dist,2),"m"), x=0.9, y=0.9,
 #                             gp=gpar(fontface=3, col="black", cex=0.9), draw = FALSE)
 #   reloc.plot <- ggplot() + theme_classic() + geom_path(data=relocs.df, aes(x=x,y=y), linetype = "dashed", colour = "red",
 #                                                        arrow = arrow(length=unit(.5,"cm"), angle = 20, ends="last", type = "closed")) +
-#     geom_point(data=relocs.df, aes(x=x, y=y)) + geom_point(data=relocs.df, aes(x=x[1], 
+#     geom_point(data=relocs.df, aes(x=x, y=y)) + geom_point(data=relocs.df, aes(x=x[1],
 #                                                                                y=y[1]), size = 3, color = "darkgreen", pch=0) +
 #     labs(x="Easting (m)", y="Northing (m)", title=relocs.df$id[1]) +
 #     theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5)) +
@@ -526,7 +546,7 @@ dist_analysis("2007 .csv")
 #   colnames(relocs_dist) <- "Total Distance"
 #   name <- relocs.df$id[1]
 #   row.names(relocs_dist) <- name
-#   write.table(relocs_dist,file="reloc_dist.csv", 
+#   write.table(relocs_dist,file="reloc_dist.csv",
 #               append=TRUE,sep=",", col.names=FALSE, row.names=TRUE)
 #   dist.plot
 # }
@@ -594,9 +614,6 @@ library(move)
 hrBootstrap(x=M255.sp, rep=100, unin='m', unout='ha')
 
 # rm(M255.df)
-
-# Return to primary directory
-setwd("~/Dropbox/Gila Monster Data/GM_Study") 
 
 ################################
 ##      SPATIAL ANALYSES      ##

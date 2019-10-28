@@ -6,6 +6,7 @@ output:
   html_notebook: default
   pdf_document: default
   fig_caption: yes
+  number_sections: yes
 ---
 
 ABSTRACT:
@@ -216,12 +217,16 @@ summary(RM.seasonal)
 
 <span style="color:blue">Gila Monster Home Range Overlap of 100% MCPs.</span>
 
+```{r}
+## Set projection for mapping:
+CRS.SC<-CRS("+proj=utm +zone=12 +ellps=WGS84 +units=m +no_defs")
+```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-Male.MCP <- rbind(M67_MCP,M69_MCP,M255_MCP,M215_MCP,M14_MCP,M119_MCP,M112_MCP)
+# Male.MCP <- rbind(M67_MCP,M69_MCP,M255_MCP,M215_MCP,M14_MCP,M119_MCP,M112_MCP)
 # mapview(Male.MCP)
-Female.MCP <- rbind(F66_MCP,F36_MCP,F252_MCP,F214_MCP,F200_MCP,F147_MCP,F146_MCP,F137_MCP,
-                    F135_MCP,F114_MCP,F104_MCP)
+# Female.MCP <- rbind(F66_MCP,F36_MCP,F252_MCP,F214_MCP,F200_MCP,F147_MCP,F146_MCP,F137_MCP,
+                    # F135_MCP,F114_MCP,F104_MCP)
 # mapview(Female.MCP)
 
 mapview(Male.MCP, legend=F, zcol="id", col.regions = c("blue"), alpha.regions=0.3) + 
@@ -244,130 +249,284 @@ kable(OL_Table, format = "pandoc", caption = 'Home range overlap of Stone Canyon
 <span style="color:blue">Gila Monster Home Range Shifts of 100% MCPs.</span>
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# mcp.shift.TEST4 <- ggplot() +
-#   geom_polygon(data=F104_mcp.08T, aes(x=F104_mcp.08T$long, y=F104_mcp.08T$lat),
-#                alpha=0.1,colour="black",linetype=2) +
-#   geom_polygon(data=F104_mcp.09T, aes(x=F104_mcp.09T$long, y=F104_mcp.09T$lat),
-#                alpha=0.1,colour="black",linetype=2) +
-#   geom_polygon(data=F114_mcp.08T, aes(x=F114_mcp.08T$long, y=F114_mcp.08T$lat),
-#                alpha=0.1,colour="black",linetype=3) +
-#   geom_polygon(data=F114_mcp.09T, aes(x=F114_mcp.09T$long, y=F114_mcp.09T$lat),
-#                alpha=0.1,colour="black",linetype=3) +
-#   geom_polygon(data=F114_mcp.10T, aes(x=F114_mcp.10T$long, y=F114_mcp.10T$lat),
-#                alpha=0.1,colour="black",linetype=3) +
-#   geom_polygon(data=F114_mcp.11T, aes(x=F114_mcp.11T$long, y=F114_mcp.11T$lat),
-#                alpha=0.1,colour="black",linetype=3) +
-#   geom_polygon(data=F114_mcp.12T, aes(x=F114_mcp.12T$long, y=F114_mcp.12T$lat),
-#                alpha=0.1,colour="black",linetype=3) +
-#   geom_polygon(data=F137_mcp.09T, aes(x=F137_mcp.09T$long, y=F137_mcp.09T$lat),
-#                alpha=0.1,colour="black",linetype=4) +
-#   geom_polygon(data=F137_mcp.10T, aes(x=F137_mcp.10T$long, y=F137_mcp.10T$lat),
-#                alpha=0.1,colour="black",linetype=4) +
-#   geom_polygon(data=F137_mcp.11T, aes(x=F137_mcp.11T$long, y=F137_mcp.11T$lat),
-#                alpha=0.1,colour="black",linetype=4) +
-#   geom_polygon(data=F147_mcp.09T, aes(x=F147_mcp.09T$long, y=F147_mcp.09T$lat),
-#                alpha=0.1,colour="red",linetype=1) +
-#   geom_polygon(data=F147_mcp.10T, aes(x=F147_mcp.10T$long, y=F147_mcp.10T$lat),
-#                alpha=0.1,colour="red",linetype=1) +
-#   geom_polygon(data=F147_mcp.11T, aes(x=F147_mcp.11T$long, y=F147_mcp.11T$lat),
-#                alpha=0.1,colour="red",linetype=1) +
-#   geom_polygon(data=F147_mcp.12T, aes(x=F147_mcp.12T$long, y=F147_mcp.12T$lat),
-#                alpha=0.1,colour="red",linetype=1) +
-#   geom_polygon(data=F36_mcp.08T, aes(x=F36_mcp.08T$long, y=F36_mcp.08T$lat),
-#                alpha=0.1,colour="black",linetype=6) +
-#   geom_polygon(data=F36_mcp.09T, aes(x=F36_mcp.09T$long, y=F36_mcp.09T$lat),
-#                alpha=0.1,colour="black",linetype=6) +
-#   geom_polygon(data=F36_mcp.10T, aes(x=F36_mcp.10T$long, y=F36_mcp.10T$lat),
-#                alpha=0.1,colour="black",linetype=6) +
-#   geom_polygon(data=F36_mcp.11T, aes(x=F36_mcp.11T$long, y=F36_mcp.11T$lat),
-#                alpha=0.1,colour="black",linetype=6) +
-#   geom_polygon(data=F36_mcp.12T, aes(x=F36_mcp.12T$long, y=F36_mcp.12T$lat),
-#                alpha=0.1,colour="black",linetype=6) +
-#   geom_polygon(data=F66_mcp.08T, aes(x=F66_mcp.08T$long, y=F66_mcp.08T$lat),
-#                alpha=0.1,colour="black",linetype=1) +
-#   geom_polygon(data=F66_mcp.09T, aes(x=F66_mcp.09T$long, y=F66_mcp.09T$lat),
-#                alpha=0.1,colour="black",linetype=1) +
-#   geom_polygon(data=F66_mcp.10T, aes(x=F66_mcp.10T$long, y=F66_mcp.10T$lat),
-#                alpha=0.1,colour="black",linetype=1) +
-#   geom_polygon(data=M119_mcp.08T, aes(x=M119_mcp.08T$long, y=M119_mcp.08T$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=M119_mcp.09T, aes(x=M119_mcp.09T$long, y=M119_mcp.09T$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=M119_mcp.10T, aes(x=M119_mcp.10T$long, y=M119_mcp.10T$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=M112_mcp.07T, aes(x=M112_mcp.07T$long, y=M112_mcp.07T$lat),
-#                alpha=0.1,colour="blue",linetype=3) +
-#   geom_polygon(data=M112_mcp.09T, aes(x=M112_mcp.09T$long, y=M112_mcp.09T$lat),
-#                alpha=0.1,colour="blue",linetype=3) +
-#   geom_polygon(data=M112_mcp.10T, aes(x=M112_mcp.10T$long, y=M112_mcp.10T$lat),
-#                alpha=0.1,colour="blue",linetype=3) +
-#   # geom_polygon(data=M69_mcp.09T, aes(x=M69_mcp.09T$long, y=M69_mcp.09T$lat),
-#   #              alpha=0.1,colour="black") +
-#   # geom_polygon(data=M69_mcp.10T, aes(x=M69_mcp.10T$long, y=M69_mcp.10T$lat),
-#   #              alpha=0.1,colour="black") +
-#   # geom_polygon(data=M215_mcp.11T, aes(x=M215_mcp.11T$long, y=M215_mcp.11T$lat),
-#   #              alpha=0.1,colour="black") +
-#   # geom_polygon(data=M215_mcp.12T, aes(x=M215_mcp.12T$long, y=M215_mcp.12T$lat),
-#   #              alpha=0.1,colour="black") +
-#   theme_bw() +labs(x="Easting (m)", y="Northing (m)",title="Yearly Home Range Shifts") +
-#   theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5))
+## Create MCP polygons by YEAR:
+M215_mcp.11<-mcp_analysis.POLY("./M215/2011 .csv", percentage= 100)
+M215_mcp.12<-mcp_analysis.POLY("./M215/2012 .csv", percentage= 100)
+F104_mcp.08<-mcp_analysis.POLY("./F104/2008 .csv", percentage= 100)
+F104_mcp.09<-mcp_analysis.POLY("./F104/2009 .csv", percentage= 100)
+F114_mcp.08<-mcp_analysis.POLY("./F114/2008 .csv", percentage= 100)
+F114_mcp.09<-mcp_analysis.POLY("./F114/2009 .csv", percentage= 100)
+F114_mcp.10<-mcp_analysis.POLY("./F114/2010 .csv", percentage= 100)
+F114_mcp.11<-mcp_analysis.POLY("./F114/2011 .csv", percentage= 100)
+F114_mcp.12<-mcp_analysis.POLY("./F114/2012 .csv", percentage= 100)
+F137_mcp.09<-mcp_analysis.POLY("./F137/2009 .csv", percentage= 100)
+F137_mcp.10<-mcp_analysis.POLY("./F137/2010 .csv", percentage= 100)
+F137_mcp.11<-mcp_analysis.POLY("./F137/2011 .csv", percentage= 100)
+F147_mcp.09<-mcp_analysis.POLY("./F147/2009 .csv", percentage= 100)
+F147_mcp.10<-mcp_analysis.POLY("./F147/2010 .csv", percentage= 100)
+F147_mcp.11<-mcp_analysis.POLY("./F147/2011 .csv", percentage= 100)
+F147_mcp.12<-mcp_analysis.POLY("./F147/2012 .csv", percentage= 100)
+F36_mcp.08<-mcp_analysis.POLY("./F36/2008 .csv", percentage= 100)
+F36_mcp.09<-mcp_analysis.POLY("./F36/2009 .csv", percentage= 100)
+F36_mcp.10<-mcp_analysis.POLY("./F36/2010 .csv", percentage= 100)
+F36_mcp.11<-mcp_analysis.POLY("./F36/2011 .csv", percentage= 100)
+F36_mcp.12<-mcp_analysis.POLY("./F36/2012 .csv", percentage= 100)
+F66_mcp.08<-mcp_analysis.POLY("./F66/2008 .csv", percentage= 100)
+F66_mcp.09<-mcp_analysis.POLY("./F66/2009 .csv", percentage= 100)
+F66_mcp.10<-mcp_analysis.POLY("./F66/2010 .csv", percentage= 100)
+M119_mcp.08<-mcp_analysis.POLY("./M119/2008 .csv", percentage= 100)
+M119_mcp.09<-mcp_analysis.POLY("./M119/2009 .csv", percentage= 100)
+M119_mcp.10<-mcp_analysis.POLY("./M119/2010 .csv", percentage= 100)
+M112_mcp.07<-mcp_analysis.POLY("./M112/2007 .csv", percentage= 100)
+M112_mcp.09<-mcp_analysis.POLY("./M112/2009 .csv", percentage= 100)
+M112_mcp.10<-mcp_analysis.POLY("./M112/2010 .csv", percentage= 100)
+M69_mcp.09<-mcp_analysis.POLY("./M69/2009 .csv", percentage= 100)
+M69_mcp.10<-mcp_analysis.POLY("./M69/2010 .csv", percentage= 100)
+
+## Fortify mcp polygons for ggplot2 *YEAR*:
+F104_mcp.08T <- fortify(F104_mcp.08, region = "id")
+F104_mcp.09T <- fortify(F104_mcp.09, region = "id")
+F114_mcp.08T <- fortify(F114_mcp.08, region = "id")
+F114_mcp.09T <- fortify(F114_mcp.09, region = "id")
+F114_mcp.10T <- fortify(F114_mcp.10, region = "id")
+F114_mcp.11T <- fortify(F114_mcp.11, region = "id")
+F114_mcp.12T <- fortify(F114_mcp.12, region = "id")
+F137_mcp.09T <- fortify(F137_mcp.09, region = "id")
+F137_mcp.10T <- fortify(F137_mcp.10, region = "id")
+F137_mcp.11T <- fortify(F137_mcp.11, region = "id")
+F147_mcp.09T <- fortify(F147_mcp.09, region = "id")
+F147_mcp.10T <- fortify(F147_mcp.10, region = "id")
+F147_mcp.11T <- fortify(F147_mcp.11, region = "id")
+F147_mcp.12T <- fortify(F147_mcp.12, region = "id")
+F36_mcp.08T <- fortify(F36_mcp.08, region = "id")
+F36_mcp.09T <- fortify(F36_mcp.09, region = "id")
+F36_mcp.10T <- fortify(F36_mcp.10, region = "id")
+F36_mcp.11T <- fortify(F36_mcp.11, region = "id")
+F36_mcp.12T <- fortify(F36_mcp.12, region = "id")
+F66_mcp.08T <- fortify(F66_mcp.08, region = "id")
+F66_mcp.09T <- fortify(F66_mcp.09, region = "id")
+F66_mcp.10T <- fortify(F66_mcp.10, region = "id")
+M119_mcp.08T <- fortify(M119_mcp.08, region = "id")
+M119_mcp.09T <- fortify(M119_mcp.09, region = "id")
+M119_mcp.10T <- fortify(M119_mcp.10, region = "id")
+M112_mcp.07T <- fortify(M112_mcp.07, region = "id")
+M112_mcp.09T <- fortify(M112_mcp.09, region = "id")
+M112_mcp.10T <- fortify(M112_mcp.10, region = "id")
+M69_mcp.09T <- fortify(M69_mcp.09, region = "id")
+M69_mcp.10T <- fortify(M69_mcp.10, region = "id")
+M215_mcp.11T <- fortify(M215_mcp.11, region = "id")
+M215_mcp.12T <- fortify(M215_mcp.12, region = "id")
+
+mcp.shift.TEST4 <- ggplot() +
+  geom_polygon(data=F104_mcp.08T, aes(x=F104_mcp.08T$long, y=F104_mcp.08T$lat),
+               alpha=0.1,colour="black",linetype=2) +
+  geom_polygon(data=F104_mcp.09T, aes(x=F104_mcp.09T$long, y=F104_mcp.09T$lat),
+               alpha=0.1,colour="black",linetype=2) +
+  geom_polygon(data=F114_mcp.08T, aes(x=F114_mcp.08T$long, y=F114_mcp.08T$lat),
+               alpha=0.1,colour="black",linetype=3) +
+  geom_polygon(data=F114_mcp.09T, aes(x=F114_mcp.09T$long, y=F114_mcp.09T$lat),
+               alpha=0.1,colour="black",linetype=3) +
+  geom_polygon(data=F114_mcp.10T, aes(x=F114_mcp.10T$long, y=F114_mcp.10T$lat),
+               alpha=0.1,colour="black",linetype=3) +
+  geom_polygon(data=F114_mcp.11T, aes(x=F114_mcp.11T$long, y=F114_mcp.11T$lat),
+               alpha=0.1,colour="black",linetype=3) +
+  geom_polygon(data=F114_mcp.12T, aes(x=F114_mcp.12T$long, y=F114_mcp.12T$lat),
+               alpha=0.1,colour="black",linetype=3) +
+  geom_polygon(data=F137_mcp.09T, aes(x=F137_mcp.09T$long, y=F137_mcp.09T$lat),
+               alpha=0.1,colour="black",linetype=4) +
+  geom_polygon(data=F137_mcp.10T, aes(x=F137_mcp.10T$long, y=F137_mcp.10T$lat),
+               alpha=0.1,colour="black",linetype=4) +
+  geom_polygon(data=F137_mcp.11T, aes(x=F137_mcp.11T$long, y=F137_mcp.11T$lat),
+               alpha=0.1,colour="black",linetype=4) +
+  geom_polygon(data=F147_mcp.09T, aes(x=F147_mcp.09T$long, y=F147_mcp.09T$lat),
+               alpha=0.1,colour="red",linetype=1) +
+  geom_polygon(data=F147_mcp.10T, aes(x=F147_mcp.10T$long, y=F147_mcp.10T$lat),
+               alpha=0.1,colour="red",linetype=1) +
+  geom_polygon(data=F147_mcp.11T, aes(x=F147_mcp.11T$long, y=F147_mcp.11T$lat),
+               alpha=0.1,colour="red",linetype=1) +
+  geom_polygon(data=F147_mcp.12T, aes(x=F147_mcp.12T$long, y=F147_mcp.12T$lat),
+               alpha=0.1,colour="red",linetype=1) +
+  geom_polygon(data=F36_mcp.08T, aes(x=F36_mcp.08T$long, y=F36_mcp.08T$lat),
+               alpha=0.1,colour="black",linetype=6) +
+  geom_polygon(data=F36_mcp.09T, aes(x=F36_mcp.09T$long, y=F36_mcp.09T$lat),
+               alpha=0.1,colour="black",linetype=6) +
+  geom_polygon(data=F36_mcp.10T, aes(x=F36_mcp.10T$long, y=F36_mcp.10T$lat),
+               alpha=0.1,colour="black",linetype=6) +
+  geom_polygon(data=F36_mcp.11T, aes(x=F36_mcp.11T$long, y=F36_mcp.11T$lat),
+               alpha=0.1,colour="black",linetype=6) +
+  geom_polygon(data=F36_mcp.12T, aes(x=F36_mcp.12T$long, y=F36_mcp.12T$lat),
+               alpha=0.1,colour="black",linetype=6) +
+  geom_polygon(data=F66_mcp.08T, aes(x=F66_mcp.08T$long, y=F66_mcp.08T$lat),
+               alpha=0.1,colour="black",linetype=1) +
+  geom_polygon(data=F66_mcp.09T, aes(x=F66_mcp.09T$long, y=F66_mcp.09T$lat),
+               alpha=0.1,colour="black",linetype=1) +
+  geom_polygon(data=F66_mcp.10T, aes(x=F66_mcp.10T$long, y=F66_mcp.10T$lat),
+               alpha=0.1,colour="black",linetype=1) +
+  geom_polygon(data=M119_mcp.08T, aes(x=M119_mcp.08T$long, y=M119_mcp.08T$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=M119_mcp.09T, aes(x=M119_mcp.09T$long, y=M119_mcp.09T$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=M119_mcp.10T, aes(x=M119_mcp.10T$long, y=M119_mcp.10T$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=M112_mcp.07T, aes(x=M112_mcp.07T$long, y=M112_mcp.07T$lat),
+               alpha=0.1,colour="blue",linetype=3) +
+  geom_polygon(data=M112_mcp.09T, aes(x=M112_mcp.09T$long, y=M112_mcp.09T$lat),
+               alpha=0.1,colour="blue",linetype=3) +
+  geom_polygon(data=M112_mcp.10T, aes(x=M112_mcp.10T$long, y=M112_mcp.10T$lat),
+               alpha=0.1,colour="blue",linetype=3) +
+  # geom_polygon(data=M69_mcp.09T, aes(x=M69_mcp.09T$long, y=M69_mcp.09T$lat),
+  #              alpha=0.1,colour="black") +
+  # geom_polygon(data=M69_mcp.10T, aes(x=M69_mcp.10T$long, y=M69_mcp.10T$lat),
+  #              alpha=0.1,colour="black") +
+  # geom_polygon(data=M215_mcp.11T, aes(x=M215_mcp.11T$long, y=M215_mcp.11T$lat),
+  #              alpha=0.1,colour="black") +
+  # geom_polygon(data=M215_mcp.12T, aes(x=M215_mcp.12T$long, y=M215_mcp.12T$lat),
+  #              alpha=0.1,colour="black") +
+  theme_bw() +labs(x="Easting (m)", y="Northing (m)",title="Yearly Home Range Shifts") +
+  theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5))
 
 mcp.shift.TEST4
 ```
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-# mcp.shift.TEST5 <- ggplot() +
-#   geom_polygon(data=F114_mcp.EMT, aes(x=F114_mcp.EMT$long, y=F114_mcp.EMT$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=F114_mcp.DRYT, aes(x=F114_mcp.DRYT$long, y=F114_mcp.DRYT$lat),
-#                alpha=0.1,colour="red",linetype=3) +
-#   geom_polygon(data=F114_mcp.MONT, aes(x=F114_mcp.MONT$long, y=F114_mcp.MONT$lat),
-#                alpha=0.1,colour="green",linetype=4) +
-#   geom_polygon(data=F114_mcp.PMT, aes(x=F114_mcp.PMT$long, y=F114_mcp.PMT$lat),
-#                alpha=0.1,colour="black",linetype=5) +
-#   geom_polygon(data=F137_mcp.EMT, aes(x=F137_mcp.EMT$long, y=F137_mcp.EMT$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=F137_mcp.DRYT, aes(x=F137_mcp.DRYT$long, y=F137_mcp.DRYT$lat),
-#                alpha=0.1,colour="red",linetype=3) +
-#   geom_polygon(data=F137_mcp.MONT, aes(x=F137_mcp.MONT$long, y=F137_mcp.MONT$lat),
-#                alpha=0.1,colour="green",linetype=4) +
-#   geom_polygon(data=F137_mcp.PMT, aes(x=F137_mcp.PMT$long, y=F137_mcp.PMT$lat),
-#                alpha=0.1,colour="black",linetype=5) +
-#   geom_polygon(data=F147_mcp.EMT, aes(x=F147_mcp.EMT$long, y=F147_mcp.EMT$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=F147_mcp.DRYT, aes(x=F147_mcp.DRYT$long, y=F147_mcp.DRYT$lat),
-#                alpha=0.1,colour="red",linetype=3) +
-#   geom_polygon(data=F147_mcp.MONT, aes(x=F147_mcp.MONT$long, y=F147_mcp.MONT$lat),
-#                alpha=0.1,colour="green",linetype=4) +
-#   geom_polygon(data=F147_mcp.PMT, aes(x=F147_mcp.PMT$long, y=F147_mcp.PMT$lat),
-#                alpha=0.1,colour="black",linetype=5) +
-#   # geom_polygon(data=F252_mcp.EMT, aes(x=F252_mcp.EMT$long, y=F252_mcp.EMT$lat),
-#   #              alpha=0.1,colour="black",linetype=2) +
-#   # geom_polygon(data=F252_mcp.DRYT, aes(x=F252_mcp.DRYT$long, y=F252_mcp.DRYT$lat),
-#   #              alpha=0.1,colour="black",linetype=3) +
-#   # geom_polygon(data=F252_mcp.MONT, aes(x=F252_mcp.MONT$long, y=F252_mcp.MONT$lat),
-#   #              alpha=0.1,colour="black",linetype=4) +
-#   # geom_polygon(data=F252_mcp.PMT, aes(x=F252_mcp.PMT$long, y=F252_mcp.PMT$lat),
-#   #              alpha=0.1,colour="black",linetype=5) +
-#   geom_polygon(data=F36_mcp.EMT, aes(x=F36_mcp.EMT$long, y=F36_mcp.EMT$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=F36_mcp.DRYT, aes(x=F36_mcp.DRYT$long, y=F36_mcp.DRYT$lat),
-#                alpha=0.1,colour="red",linetype=3) +
-#   geom_polygon(data=F36_mcp.MONT, aes(x=F36_mcp.MONT$long, y=F36_mcp.MONT$lat),
-#                alpha=0.1,colour="green",linetype=4) +
-#   geom_polygon(data=F36_mcp.PMT, aes(x=F36_mcp.PMT$long, y=F36_mcp.PMT$lat),
-#                alpha=0.1,colour="black",linetype=5) +
-#   geom_polygon(data=F66_mcp.EMT, aes(x=F66_mcp.EMT$long, y=F66_mcp.EMT$lat),
-#                alpha=0.1,colour="blue",linetype=2) +
-#   geom_polygon(data=F66_mcp.DRYT, aes(x=F66_mcp.DRYT$long, y=F66_mcp.DRYT$lat),
-#                alpha=0.1,colour="red",linetype=3) +
-#   geom_polygon(data=F66_mcp.MONT, aes(x=F66_mcp.MONT$long, y=F66_mcp.MONT$lat),
-#                alpha=0.1,colour="green",linetype=4) +
-#   geom_polygon(data=F66_mcp.PMT, aes(x=F66_mcp.PMT$long, y=F66_mcp.PMT$lat),
-#                alpha=0.1,colour="black",linetype=5) +
-#   theme_bw() +labs(x="Easting (m)", y="Northing (m)",title="Seasonal Home Range Shifts") +
-#   theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5))
+## Create MCP polygons by SEASON:
+M215_mcp.EM<-mcp_analysis.POLY("./M215/Emergence .csv", percentage= 100)
+M215_mcp.DRY<-mcp_analysis.POLY("./M215/Dry .csv", percentage= 100)
+M215_mcp.MON<-mcp_analysis.POLY("./M215/Monsoon .csv", percentage= 100)
+
+M112_mcp.DRY<-mcp_analysis.POLY("./M112/Dry .csv", percentage= 100)
+M112_mcp.MON<-mcp_analysis.POLY("./M112/Monsoon .csv", percentage= 100)
+M112_mcp.PM<-mcp_analysis.POLY("./M112/Post_Monsoon .csv", percentage= 100)
+
+M119_mcp.DRY<-mcp_analysis.POLY("./M119/Dry .csv", percentage= 100)
+M119_mcp.MON<-mcp_analysis.POLY("./M119/Monsoon .csv", percentage= 100)
+M119_mcp.PM<-mcp_analysis.POLY("./M119/Post_Monsoon .csv", percentage= 100)
+
+F114_mcp.EM<-mcp_analysis.POLY("./F114/Emergence .csv", percentage= 100)
+F114_mcp.DRY<-mcp_analysis.POLY("./F114/Dry .csv", percentage= 100)
+F114_mcp.MON<-mcp_analysis.POLY("./F114/Monsoon .csv", percentage= 100)
+F114_mcp.PM<-mcp_analysis.POLY("./F114/Post_Monsoon .csv", percentage= 100)
+
+F137_mcp.EM<-mcp_analysis.POLY("./F137/Emergence .csv", percentage= 100)
+F137_mcp.DRY<-mcp_analysis.POLY("./F137/Dry .csv", percentage= 100)
+F137_mcp.MON<-mcp_analysis.POLY("./F137/Monsoon .csv", percentage= 100)
+F137_mcp.PM<-mcp_analysis.POLY("./F137/Post_Monsoon .csv", percentage= 100)
+
+F147_mcp.EM<-mcp_analysis.POLY("./F147/Emergence .csv", percentage= 100)
+F147_mcp.DRY<-mcp_analysis.POLY("./F147/Dry .csv", percentage= 100)
+F147_mcp.MON<-mcp_analysis.POLY("./F147/Monsoon .csv", percentage= 100)
+F147_mcp.PM<-mcp_analysis.POLY("./F147/Post_Monsoon .csv", percentage= 100)
+
+F252_mcp.EM<-mcp_analysis.POLY("./F252/Emergence .csv", percentage= 100)
+F252_mcp.DRY<-mcp_analysis.POLY("./F252/Dry .csv", percentage= 100)
+F252_mcp.MON<-mcp_analysis.POLY("./F252/Monsoon .csv", percentage= 100)
+F252_mcp.PM<-mcp_analysis.POLY("./F252/Post_Monsoon .csv", percentage= 100)
+
+F36_mcp.EM<-mcp_analysis.POLY("./F36/Emergence .csv", percentage= 100)
+F36_mcp.DRY<-mcp_analysis.POLY("./F36/Dry .csv", percentage= 100)
+F36_mcp.MON<-mcp_analysis.POLY("./F36/Monsoon .csv", percentage= 100)
+F36_mcp.PM<-mcp_analysis.POLY("./F36/Post_Monsoon .csv", percentage= 100)
+
+F66_mcp.EM<-mcp_analysis.POLY("./F66/Emergence .csv", percentage= 100)
+F66_mcp.DRY<-mcp_analysis.POLY("./F66/Dry .csv", percentage= 100)
+F66_mcp.MON<-mcp_analysis.POLY("./F66/Monsoon .csv", percentage= 100)
+F66_mcp.PM<-mcp_analysis.POLY("./F66/Post_Monsoon .csv", percentage= 100)
+
+## Fortify mcp polygons for ggplot2 *SEASON*:
+M215_mcp.EMT <- fortify(M215_mcp.EM, region = "id")
+M215_mcp.DRYT <- fortify(M215_mcp.DRY, region = "id")
+M215_mcp.MONT <- fortify(M215_mcp.MON, region = "id")
+
+M112_mcp.DRYT <- fortify(M112_mcp.DRY, region = "id")
+M112_mcp.MONT <- fortify(M112_mcp.MON, region = "id")
+M112_mcp.PMT <- fortify(M112_mcp.PM, region = "id")
+
+M119_mcp.DRYT <- fortify(M119_mcp.DRY, region = "id")
+M119_mcp.MONT <- fortify(M119_mcp.MON, region = "id")
+M119_mcp.PMT <- fortify(M119_mcp.PM, region = "id")
+
+F114_mcp.EMT <- fortify(F114_mcp.EM, region = "id")
+F114_mcp.DRYT <- fortify(F114_mcp.DRY, region = "id")
+F114_mcp.MONT <- fortify(F114_mcp.MON, region = "id")
+F114_mcp.PMT <- fortify(F114_mcp.PM, region = "id")
+
+F137_mcp.EMT <- fortify(F137_mcp.EM, region = "id")
+F137_mcp.DRYT <- fortify(F137_mcp.DRY, region = "id")
+F137_mcp.MONT <- fortify(F137_mcp.MON, region = "id")
+F137_mcp.PMT <- fortify(F137_mcp.PM, region = "id")
+
+F147_mcp.EMT <- fortify(F147_mcp.EM, region = "id")
+F147_mcp.DRYT <- fortify(F147_mcp.DRY, region = "id")
+F147_mcp.MONT <- fortify(F147_mcp.MON, region = "id")
+F147_mcp.PMT <- fortify(F147_mcp.PM, region = "id")
+
+F252_mcp.EMT <- fortify(F252_mcp.EM, region = "id")
+F252_mcp.DRYT <- fortify(F252_mcp.DRY, region = "id")
+F252_mcp.MONT <- fortify(F252_mcp.MON, region = "id")
+F252_mcp.PMT <- fortify(F252_mcp.PM, region = "id")
+
+F36_mcp.EMT <- fortify(F36_mcp.EM, region = "id")
+F36_mcp.DRYT <- fortify(F36_mcp.DRY, region = "id")
+F36_mcp.MONT <- fortify(F36_mcp.MON, region = "id")
+F36_mcp.PMT <- fortify(F36_mcp.PM, region = "id")
+
+F66_mcp.EMT <- fortify(F66_mcp.EM, region = "id")
+F66_mcp.DRYT <- fortify(F66_mcp.DRY, region = "id")
+F66_mcp.MONT <- fortify(F66_mcp.MON, region = "id")
+F66_mcp.PMT <- fortify(F66_mcp.PM, region = "id")
+
+mcp.shift.TEST5 <- ggplot() +
+  geom_polygon(data=F114_mcp.EMT, aes(x=F114_mcp.EMT$long, y=F114_mcp.EMT$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=F114_mcp.DRYT, aes(x=F114_mcp.DRYT$long, y=F114_mcp.DRYT$lat),
+               alpha=0.1,colour="red",linetype=3) +
+  geom_polygon(data=F114_mcp.MONT, aes(x=F114_mcp.MONT$long, y=F114_mcp.MONT$lat),
+               alpha=0.1,colour="green",linetype=4) +
+  geom_polygon(data=F114_mcp.PMT, aes(x=F114_mcp.PMT$long, y=F114_mcp.PMT$lat),
+               alpha=0.1,colour="black",linetype=5) +
+  geom_polygon(data=F137_mcp.EMT, aes(x=F137_mcp.EMT$long, y=F137_mcp.EMT$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=F137_mcp.DRYT, aes(x=F137_mcp.DRYT$long, y=F137_mcp.DRYT$lat),
+               alpha=0.1,colour="red",linetype=3) +
+  geom_polygon(data=F137_mcp.MONT, aes(x=F137_mcp.MONT$long, y=F137_mcp.MONT$lat),
+               alpha=0.1,colour="green",linetype=4) +
+  geom_polygon(data=F137_mcp.PMT, aes(x=F137_mcp.PMT$long, y=F137_mcp.PMT$lat),
+               alpha=0.1,colour="black",linetype=5) +
+  geom_polygon(data=F147_mcp.EMT, aes(x=F147_mcp.EMT$long, y=F147_mcp.EMT$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=F147_mcp.DRYT, aes(x=F147_mcp.DRYT$long, y=F147_mcp.DRYT$lat),
+               alpha=0.1,colour="red",linetype=3) +
+  geom_polygon(data=F147_mcp.MONT, aes(x=F147_mcp.MONT$long, y=F147_mcp.MONT$lat),
+               alpha=0.1,colour="green",linetype=4) +
+  geom_polygon(data=F147_mcp.PMT, aes(x=F147_mcp.PMT$long, y=F147_mcp.PMT$lat),
+               alpha=0.1,colour="black",linetype=5) +
+  # geom_polygon(data=F252_mcp.EMT, aes(x=F252_mcp.EMT$long, y=F252_mcp.EMT$lat),
+  #              alpha=0.1,colour="black",linetype=2) +
+  # geom_polygon(data=F252_mcp.DRYT, aes(x=F252_mcp.DRYT$long, y=F252_mcp.DRYT$lat),
+  #              alpha=0.1,colour="black",linetype=3) +
+  # geom_polygon(data=F252_mcp.MONT, aes(x=F252_mcp.MONT$long, y=F252_mcp.MONT$lat),
+  #              alpha=0.1,colour="black",linetype=4) +
+  # geom_polygon(data=F252_mcp.PMT, aes(x=F252_mcp.PMT$long, y=F252_mcp.PMT$lat),
+  #              alpha=0.1,colour="black",linetype=5) +
+  geom_polygon(data=F36_mcp.EMT, aes(x=F36_mcp.EMT$long, y=F36_mcp.EMT$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=F36_mcp.DRYT, aes(x=F36_mcp.DRYT$long, y=F36_mcp.DRYT$lat),
+               alpha=0.1,colour="red",linetype=3) +
+  geom_polygon(data=F36_mcp.MONT, aes(x=F36_mcp.MONT$long, y=F36_mcp.MONT$lat),
+               alpha=0.1,colour="green",linetype=4) +
+  geom_polygon(data=F36_mcp.PMT, aes(x=F36_mcp.PMT$long, y=F36_mcp.PMT$lat),
+               alpha=0.1,colour="black",linetype=5) +
+  geom_polygon(data=F66_mcp.EMT, aes(x=F66_mcp.EMT$long, y=F66_mcp.EMT$lat),
+               alpha=0.1,colour="blue",linetype=2) +
+  geom_polygon(data=F66_mcp.DRYT, aes(x=F66_mcp.DRYT$long, y=F66_mcp.DRYT$lat),
+               alpha=0.1,colour="red",linetype=3) +
+  geom_polygon(data=F66_mcp.MONT, aes(x=F66_mcp.MONT$long, y=F66_mcp.MONT$lat),
+               alpha=0.1,colour="green",linetype=4) +
+  geom_polygon(data=F66_mcp.PMT, aes(x=F66_mcp.PMT$long, y=F66_mcp.PMT$lat),
+               alpha=0.1,colour="black",linetype=5) +
+  theme_bw() +labs(x="Easting (m)", y="Northing (m)",title="Seasonal Home Range Shifts") +
+  theme(legend.position="none", plot.title = element_text(face = "bold", hjust = 0.5))
 
 mcp.shift.TEST5
 
