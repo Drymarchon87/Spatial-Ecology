@@ -17,8 +17,8 @@
 2007,F114,female,subsidized,2.51,8,0.58,7,22.99,8
 2007,F36,female,subsidized,5.05,20,5,19,16.51,20
 2007,F66,female,subsidized,10.23,22,5.56,20,32.31,22
-2007,M67,male,subsidized,13.71,16,8.55,15,,
-2007,M112,male,subsidized,12.23,13,12.23,12,,13
+2007,M67,male,subsidized,13.71,16,8.55,15,NA,NA
+2007,M112,male,subsidized,12.23,13,12.23,12,NA,13
 2007,M14,male,subsidized,4.66,15,3.87,14,14.52,15
 2007,M67,male,subsidized,13.71,16,8.55,15,35.47,14
 2008,F104,female,subsidized,4.97,53,3.47,50,13.22,53
@@ -35,9 +35,9 @@
 2009,F147,female,subsidized,17.9,62,14.04,60,39.67,62
 2009,F36,female,subsidized,7.48,67,7.31,65,13.96,67
 2009,F66,female,subsidized,12.8,71,12.12,70,25.9,71
-2009,M112,female,subsidized,7.89,18,1.73,17,,18
+2009,M112,female,subsidized,7.89,18,1.73,17,NA,18
 2009,M119,male,subsidized,22.62,69,16.37,67,49.53,69
-2009,M69,male,subsidized,1.91,20,1.91,20,,
+2009,M69,male,subsidized,1.91,20,1.91,20,NA,NA
 2009,F146,male,subsidized,9.94,43,7.15,40,20.17,43
 2010,F114,female,subsidized,9.65,44,8.3,41,21.06,44
 2010,F137,female,subsidized,6.32,45,5.26,42,13.24,45

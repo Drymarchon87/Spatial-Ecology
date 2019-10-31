@@ -29,8 +29,43 @@ library(dplyr)
 library(ggfortify)
 library(ordinal)
 library(lsmeans)
+library(ggmap)
+library(ggsn)
 #knitr::opts_chunk$set(fig.width = 5, fig.asp = 1/3) #force figures to be certain size and aspect ratio
 ```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggmap::register_google(key = "AIzaSyBjhhE9peRBmS1h9WYQx1k5MF_XAXqUfSs")
+
+p3<- ggmap(get_googlemap(center = c(lon = -110.99088, lat = 32.46878),
+                         zoom = 15, scale = 2,maptype ='satellite',archiving = TRUE,
+                         color = 'color'))
+p3
+
+Longitude<-c(-110.978,-110.978,-110.980,-110.983,-110.985,-110.988,-110.990,-110.994,-110.995,
+             -110.997,-111.003,-111.004,-111.0042,-111.000,-110.995,-110.985,-110.978,-110.980)
+
+Latitude<-c(32.463,32.462,32.462,32.461,32.461,32.460,32.462,32.464,32.466,32.468,32.468,
+            32.469,32.473,32.4733,32.472,32.474,32.471,32.467)
+ 
+mycoorddata <- as.data.frame(cbind(Longitude,Latitude))
+
+# ggmap(p3)+
+p3+geom_polygon(data=mycoorddata,aes(x=Longitude,y=Latitude),alpha=0.2,colour="red",
+                fill="red")+geom_path(data=mycoorddata,aes(x=Longitude,y=Latitude),
+                                      colour="white",alpha=0.4,size=2)+
+  annotate("text", x=-110.989,y=32.468,label="Stone Canyon Club",colour="white",size=3)+
+  scalebar(x.min = -111.005, x.max = -110.975,
+           y.min = 32.455, y.max = 32.480, anchor = NULL,
+           dist = 50, transform=TRUE,dist_unit="m", model = 'WGS84')+
+  labs(title = "SCGC Study Site Oro Valley Arizona")
+
+?scalebar()
+# annotate("point",x=7.257885,y=46.79049,size=7)
+# p + geom_point(aes(x = Longitude, y = Latitude,  colour = Initial.Type.Group), data = i2, size = 0.5) + theme(legend.position="bottom")
+```
+
 
 Compared home range sizes of *Heloderma suspectum* between two populations. One represented a subsidized population at Stone Canyon Golf Club and the other at Owl Head Buttes representing the unsubsidized population. Stone Canyon is located in Oro Valley on the north end of Tucson, Arizona.  Owl Head Buttes is located about 17 km straight line distance north west from Stone Canyon. Data at Owl Head was collected from 2000 - 2002, while fixes were collected from 2007 - 2013 at Stone Canyon. We Calculated minimum convex polygons using both 95 percent and 100 percent of the locations for each lizard.
 
@@ -50,9 +85,9 @@ kable(GM_table,format="pandoc", caption='Table 1. Home range sizes of Stone Cany
 year <- read_csv("GM_Consolidated_ByYear.csv")
 
 # quick plot
-Graph1<-ggplot(year,aes(x=N100,y=Home_Range_100mcp,colour=Environment))+
-  geom_point()+scale_colour_manual(values = c(subsidized="cyan3",nonsubsidized="indianred1"))+
-  xlab("Number of Relocations")+ylab("Area (ha) using 95% MCP")+
+Graph1<-ggplot(year,aes(x=N100,y=Home_Range_100mcp,group=Environment))+
+  geom_point(aes(shape = factor(Environment)), size = 2)+geom_smooth(method=lm)+scale_colour_manual(values = c(subsidized="cyan3",nonsubsidized="indianred1"))+
+  xlab("Number of Relocations")+ylab("Area (ha) using 100% MCP")+
   geom_smooth(method = "lm",se=FALSE)+
   theme_bw()
 
@@ -65,7 +100,6 @@ Graph1 + theme(legend.title = element_blank(),
                legend.background = element_blank(),
                legend.key = element_blank(),
                legend.box.background = element_rect(colour = "black"))
-
 # dir.create("outputs") # create a new folder to hold the output files
 # ggsave("outputs/SC_OHB_plot.pdf")
 ```
@@ -77,7 +111,7 @@ Figure 1. Non-Subsidized (Owl Head Buttes) vs. Subsidized (Stone Canyon) populat
  
                                                     
 Table 2. Group home range means of raw data of Stone Canyon and Owl Head Buttes. Grouped by environment and sex.
-```{r Table 2. Group Means, message=FALSE, warning=FALSE, paged.print=FALSE, echo=FALSE}
+```{r Table 2. Group Means, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # YR_GRP_Means <- year %>% 
 #         group_by(Environment,Sex) %>% 
 #         summarise(Home_Range_100mcp = mean(Home_Range_100mcp))
@@ -86,7 +120,7 @@ Table 2. Group home range means of raw data of Stone Canyon and Owl Head Buttes.
 library(Rmisc)
 YR_GRP_Means <- summarySE(year, measurevar="Home_Range_100mcp", groupvars=c("Environment","Sex"))
 
-kable(YR_GRP_Means, format = "pandoc", caption = 'Raw Group Means of Overall Home Ranges at Stone Canyon and Owl Head Buttes')
+kable(YR_GRP_Means, format = "pandoc", caption = 'Group Means of Overall Home Ranges at Stone Canyon and Owl Head Buttes')
 ```
 
 
@@ -100,7 +134,7 @@ kable(YR_GRP_Means, format = "pandoc", caption = 'Raw Group Means of Overall Hom
 
 # ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,fill=Environment))+geom_bar(stat='identity',position='dodge')+geom_errorbar(aes(ymin=Home_Range_100mcp-SE, ymax=Home_Range_100mcp+SE), width=.1,position=position_dodge(.9))
 
-Raw.YearHR<-ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,color=Environment))+geom_point(position=position_dodge(.1))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se), width=.1,position=position_dodge())+ggtitle("Raw Overall Home Ranges by Sex")+xlab("Sex")+ylab("Area (ha) using 100% MCP")+
+Raw.YearHR<-ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,color=Environment))+geom_point(position=position_dodge(.1))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se), width=.1,position=position_dodge())+ggtitle("Overall Home Ranges by Sex")+xlab("Sex")+ylab("Area (ha) using 100% MCP")+
   theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
 
 Raw.YearHR + theme(legend.title = element_blank(),
@@ -160,6 +194,20 @@ g4RM_sex + theme(legend.title = element_blank(),
 # ggsave("outputs/LSM_Year_plot.pdf")
 ```
 Figure 3. Adjusted means of home ranges between environment and sex. Adjusted for sample size, year and sex. 
+
+
+Post-Hoc comparisons between sexes:
+```{r Comps for Sex, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+RMmod.year<-lmer(Home_Range_100mcp~Environment+N100+Year+Sex+N100+(1|Gila),data = year)
+Sex.emm.oa <- emmeans(RMmod.year, "Environment","Sex")
+pairs(Sex.emm.oa)
+```
+
+
+Graphical Comparisons of Sex between the two populatins:
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+plot(Sex.emm.oa, comparisons = TRUE)
+```
 
 
 Table 3. Direction means of home range after being adjusted for year, sex and sample size.
