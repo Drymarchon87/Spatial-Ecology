@@ -349,6 +349,7 @@ kde_analysis.href.plot("./F104/2009 .csv", percentage=95)
 
 M112_KDEPoly<-kde_analysis.href.polygon("./M112 .csv", percentage= 95)
 mapView(M112_KDEPoly)
+
 F36_95<-kde_analysis.href.polygon("./F36 .csv", percentage= 95)
 #plot(F36_95)
 mapView(F36_95)
@@ -557,7 +558,6 @@ dist_analysis("2007 .csv")
 ##          TRACKING INTENSITY            ##
 ############################################
 
-setwd("~/Dropbox/Gila Monster Data/GM_Study/Movement") 
 
 library(tidyverse)
 library(lubridate)
@@ -565,7 +565,7 @@ library(plotly)
 library(scales)
 
 
-TrackData <- read.csv("SC_movement.csv")
+TrackData <- read.csv("./SC_movement.csv")
 View(TrackData)
 
 TrackData$DATE <- mdy(TrackData$DATE) #use lubridate to specify incoming date format; 
@@ -789,11 +789,8 @@ mapView(Net_Intersect_9,legend=F, col.regions = c("green"), alpha.regions=0.3)
 ##########################################
 ## MCP Polygons for analyzing HR shifts         
 
-## Set working directory as needed:
-setwd("~/Dropbox/Gila Monster Data/GM_Study/F66")
-
 # Plot spdf of animal locations
-F66.df<-read.csv("F66 .csv")
+F66.df<-read.csv("./F66/F66 .csv")
 
 # Using the function "SpatialPoints" we create an object of class SpatialPoints.
 # We have to specify the coordinates, whereas the bbox is automatically generated.
@@ -860,16 +857,42 @@ text2 <- list("sp.text", c(501430,  3591990), "100 m")
 spplot(F104.spdf,zcol="SEASON", sp.layout = list(polygons.layer,scale,text1,text2))
 
 ########################### WORKING GGPLOT OF MULTI POLYGONS ###############################
-## TEST 3:
-## Set working directory as needed:
-setwd("~/Dropbox/Gila Monster Data/GM_Study/M215")
 
 ## Create MCP polygons by YEAR:
-M215_mcp.12<-mcp_analysis.POLY("./2012 .csv", percentage= 100)
+M215_mcp.11<-mcp_analysis.POLY("./M215/2011 .csv", percentage= 100)
+M215_mcp.12<-mcp_analysis.POLY("./M215/2012 .csv", percentage= 100)
+F104_mcp.08<-mcp_analysis.POLY("./F104/2008 .csv", percentage= 100)
+F104_mcp.09<-mcp_analysis.POLY("./F104/2009 .csv", percentage= 100)
+F114_mcp.08<-mcp_analysis.POLY("./F114/2008 .csv", percentage= 100)
+F114_mcp.09<-mcp_analysis.POLY("./F114/2009 .csv", percentage= 100)
+F114_mcp.10<-mcp_analysis.POLY("./F114/2010 .csv", percentage= 100)
+F114_mcp.11<-mcp_analysis.POLY("./F114/2011 .csv", percentage= 100)
+F114_mcp.12<-mcp_analysis.POLY("./F114/2012 .csv", percentage= 100)
+F137_mcp.09<-mcp_analysis.POLY("./F137/2009 .csv", percentage= 100)
+F137_mcp.10<-mcp_analysis.POLY("./F137/2010 .csv", percentage= 100)
+F137_mcp.11<-mcp_analysis.POLY("./F137/2011 .csv", percentage= 100)
+F147_mcp.09<-mcp_analysis.POLY("./F147/2009 .csv", percentage= 100)
+F147_mcp.10<-mcp_analysis.POLY("./F147/2010 .csv", percentage= 100)
+F147_mcp.11<-mcp_analysis.POLY("./F147/2011 .csv", percentage= 100)
+F147_mcp.12<-mcp_analysis.POLY("./F147/2012 .csv", percentage= 100)
+F36_mcp.08<-mcp_analysis.POLY("./F36/2008 .csv", percentage= 100)
+F36_mcp.09<-mcp_analysis.POLY("./F36/2009 .csv", percentage= 100)
+F36_mcp.10<-mcp_analysis.POLY("./F36/2010 .csv", percentage= 100)
+F36_mcp.11<-mcp_analysis.POLY("./F36/2011 .csv", percentage= 100)
+F36_mcp.12<-mcp_analysis.POLY("./F36/2012 .csv", percentage= 100)
+F66_mcp.08<-mcp_analysis.POLY("./F66/2008 .csv", percentage= 100)
+F66_mcp.09<-mcp_analysis.POLY("./F66/2009 .csv", percentage= 100)
+F66_mcp.10<-mcp_analysis.POLY("./F66/2010 .csv", percentage= 100)
+M119_mcp.08<-mcp_analysis.POLY("./M119/2008 .csv", percentage= 100)
+M119_mcp.09<-mcp_analysis.POLY("./M119/2009 .csv", percentage= 100)
+M119_mcp.10<-mcp_analysis.POLY("./M119/2010 .csv", percentage= 100)
+M112_mcp.07<-mcp_analysis.POLY("./M112/2007 .csv", percentage= 100)
+M112_mcp.09<-mcp_analysis.POLY("./M112/2009 .csv", percentage= 100)
+M112_mcp.10<-mcp_analysis.POLY("./M112/2010 .csv", percentage= 100)
+M69_mcp.09<-mcp_analysis.POLY("./M69/2009 .csv", percentage= 100)
+M69_mcp.10<-mcp_analysis.POLY("./M69/2010 .csv", percentage= 100)
 
-# ?geom_polygon()
 # vignette("ggplot2-specs")
-# ?rbind()
 
 ## Fortify mcp polygons for ggplot2 *YEAR*:
 F104_mcp.08T <- fortify(F104_mcp.08, region = "id")
@@ -993,8 +1016,6 @@ mcp.shift.TEST4
 ###########################################################################################
 ##                                       SEASON                                          ##
 
-## Set working directory as needed:
-setwd("~/Dropbox/Gila Monster Data/GM_Study/F66")
 
 ## Create MCP polygons by SEASON:
 F66_mcp.EM<-mcp_analysis.POLY("./Emergence .csv", percentage= 100)

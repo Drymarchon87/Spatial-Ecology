@@ -1,24 +1,24 @@
 ﻿Refuge Type,Seasonal Comparisons,P-Value
 Rock,,
-,Emergence:Dry,0.51
-,Emergence:Monsoon,0.99
-,Emergence:Post Monsoon,0.17
-,Dry:Monsoon,1
-,Dry:Post Monsoon,1
-,Monsoon:Post Monsoon,1
+,Emergence:Dry,0.68
+,Emergence:Monsoon,0.12
+,Emergence:Post Monsoon,0.99
+,Dry:Monsoon,0.36
+,Dry:Post Monsoon,0.35
+,Monsoon:Post Monsoon,0.009*
 ,,
 Burrow,,
-,Emergence:Dry,0.037*
-,Emergence:Monsoon,0.51
-,Emergence:Post Monsoon,1
-,Dry:Monsoon,1
-,Dry:Post Monsoon,0.76
-,Monsoon:Post Monsoon,1
+,Emergence:Dry,0.001*
+,Emergence:Monsoon,0.0006*
+,Emergence:Post Monsoon,0.23
+,Dry:Monsoon,0.99
+,Dry:Post Monsoon,0.12
+,Monsoon:Post Monsoon,0.07
 ,,
 Midden,,
 ,Emergence:Dry,NA
 ,Emergence:Monsoon,NA
 ,Emergence:Post Monsoon,NA
-,Dry:Monsoon,1
-,Dry:Post Monsoon,0.05
-,Monsoon:Post Monsoon,0.018*
+,Dry:Monsoon,0.39
+,Dry:Post Monsoon,NA
+,Monsoon:Post Monsoon,NA
