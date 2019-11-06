@@ -649,7 +649,7 @@ kable(SEAS_GRP_TEST, format = "pandoc", caption = 'Seasonal Means by Sex Between
 # SEAS_GRP_TEST$Season_f = factor(SEAS_GRP_TEST$Season,
 #                                 levels=c('Emergence','Dry','Monsoon','Post_Monsoon'))
 #
-SEAS.TEST<-ggplot(SEAS_GRP_TEST,aes(x=Environment,y=Home_Range_100mcp,group=c("Season")))+geom_point(aes(shape = factor(Sex)), size=2,position=position_jitter(.2))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se),position=position_dodge(),width=.1)+ggtitle("Seasonal Means")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+SEAS.TEST<-ggplot(SEAS_GRP_TEST,aes(x=Environment,y=Home_Range_100mcp,group=c("Season")))+geom_point(aes(shape = factor(Sex)), size=2,position=position_jitter(.2))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se),position=position_dodge(),width=.1)+ggtitle("Seasonal Means")+xlab("Environment")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
 
 SEAS.TEST<-SEAS.TEST + theme(legend.title = element_blank(),
                      legend.justification=c(0,1),
@@ -679,7 +679,7 @@ refRM_season <- lsmeans(RM.mod.Season, specs = c("Environment","Season","Sex"))
 ref_dfRM_season <- as.data.frame(summary(refRM_season))
 pd_RM <- position_dodge(0.1)
 
-LSM.SeasHR<-ggplot(ref_dfRM_season,aes(x=Environment,y=lsmean,group=c("Season")))+geom_point(aes(shape = factor(Sex)), size=2,position=position_jitter(.2))+geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE),position=position_dodge(),width=.1)+ggtitle("Seasonal Means")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+LSM.SeasHR<-ggplot(ref_dfRM_season,aes(x=Environment,y=lsmean,group=c("Season")))+geom_point(aes(shape = factor(Sex)), size=2,position=position_jitter(.2))+geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE),position=position_dodge(),width=.1)+ggtitle("Seasonal Means")+xlab("Environment")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
 
 LSM.SeasHR<-LSM.SeasHR + theme(legend.title = element_blank(),
                      legend.justification=c(0,1),
