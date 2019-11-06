@@ -13,14 +13,21 @@ ABSTRACT:
 Animal movements are often defined using the home range concept. Consequently, home ranges are determined by temporal, spatial, and individual-level processes. Within the environment, one of the key factors influencing an animal’s range and how it uses the environment is that of resources.  Alterations to the environment that affect resource distribution and availability can have profound consequences on an animal’s spatial patterns. One of the best examples of this is that of golf courses.  Some environmental modifications exhibited by some human altered environment can have positive effects on certain wildlife species by altering their movement patterns and foraging efforts.  We analyzed data collected from 22 Gila Monsters Heloderma suspectum at a subsidized environment in Arizona from 2007 to 2013 and a non-subsidized environment.  We performed both kernel density estimation and minimum convex polygons for comparability purposes.  After adjusting for sex, number of fixes, and year, males in the subsidized environment had an average area of 15.9 ha while the females had an area of 5.9 ha.  In the un-subsidized environment males had an average range of 38.8 ha while females had an area of 29.8 ha.  This suggests that the home ranges may be smaller in subsidized environments than those of un-subsidized environments due to increases in available resources. There were also differences in home range overlap within and between sexes. In the subsidized population, there was very little male-male overlap with only two occurances, more female-female overlap and male-female overlap was increased. Male home ranges often overlapped several female home ranges. Gila Monsters may not have to invest in wide ranging foraging efforts as those populations of the un-subsidized environments.  
 
 
-Overview of the spatial ecology of Gila Monsters (*Heloderma suspectum*) at Stone Canyon Golf Club as a resource subsidized population vs. Owl Head Buttes representing the unsubsized natural population. For home range analyses and overlap, Minimum Convex Polygons (MCP) and Kernal Density Estimations (KDE) were used.
+Overview of the spatial ecology of Gila Monsters (*Heloderma suspectum*) at Stone Canyon Golf Club as a resource subsidized population vs. Owl Head Buttes representing the unsubsized natural population. Compared home range sizes of *Heloderma suspectum* between two populations. One represented a subsidized population at Stone Canyon Golf Club and the other at Owl Head Buttes representing the unsubsidized population. Stone Canyon is located in Oro Valley on the north end of Tucson, Arizona.  Owl Head Buttes is located about 17 km straight line distance north west from Stone Canyon. Data at Owl Head was collected from 2000 - 2002, while fixes were collected from 2007 - 2013 at Stone Canyon. We Calculated minimum convex polygons using both 95 percent and 100 percent of the locations for each lizard, as well as 95% and 50% Kernel Density Estimations (KDE).
+
 
 ```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+	message = FALSE,
+	warning = FALSE,
+	include = FALSE
+)
 # LOAD PACKAGES 
 
 library(tidyverse) 
 library(knitr) #  make tables
 library(leaflet)
+library(adehabitatHR)
 library(lme4)
 library(lmerTest)
 library(readr)
@@ -31,6 +38,7 @@ library(ordinal)
 library(lsmeans)
 library(ggmap)
 library(ggsn)
+library(mapview)
 #knitr::opts_chunk$set(fig.width = 5, fig.asp = 1/3) #force figures to be certain size and aspect ratio
 ```
 
@@ -61,27 +69,28 @@ p3+geom_polygon(data=mycoorddata,aes(x=Longitude,y=Latitude),alpha=0.2,colour="r
            dist = 50, transform=TRUE,dist_unit="m", model = 'WGS84')+
   labs(title = "SCGC Study Site Oro Valley Arizona")
 
-?scalebar()
+
 # annotate("point",x=7.257885,y=46.79049,size=7)
 # p + geom_point(aes(x = Longitude, y = Latitude,  colour = Initial.Type.Group), data = i2, size = 0.5) + theme(legend.position="bottom")
 ```
+Figure 1 | Stone Canyon Golf Club, located in Oro Valley, Arizona on the northern edge of Tucson.    
 
 
-Compared home range sizes of *Heloderma suspectum* between two populations. One represented a subsidized population at Stone Canyon Golf Club and the other at Owl Head Buttes representing the unsubsidized population. Stone Canyon is located in Oro Valley on the north end of Tucson, Arizona.  Owl Head Buttes is located about 17 km straight line distance north west from Stone Canyon. Data at Owl Head was collected from 2000 - 2002, while fixes were collected from 2007 - 2013 at Stone Canyon. We Calculated minimum convex polygons using both 95 percent and 100 percent of the locations for each lizard.
 
 <span style="color:blue">Summary of home range size.</span>
 
-Table 1. Pooled overall home ranges of Gila Monsters at Owl Head Buttes and Stone Canyon Golf Club. Both 100% and 95% MCPs were calculated between both populations. 
+Table 1 | Pooled overall home ranges of Gila Monsters at Owl Head Buttes and Stone Canyon Golf Club. Both 100% and 95% MCPs were calculated between both populations. 
 ```{r Home range sizes of Stone Canyon and Owl Head Buttes by year., echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 GM_table <- read_csv("GM_table.csv")
-kable(GM_table,format="pandoc", caption='Table 1. Home range sizes of Stone Canyon and Owl head Buttes using both 95 percent and 100 percent MCPs.')
-
+kable(GM_table,format="pandoc", caption='Home range sizes of Stone Canyon and Owl head Buttes using both 95 percent and 100 percent MCPs.')
 ```
+
+
 
 
 <span style="color:blue">Gila Monster Home Range Sizes at Stone Canyon vs. Owl Head Buttes.</span>
 
-```{r Stone Canyon Vs. Owl Head Buttes, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r Stone Canyon Vs. Owl Head Buttes, echo=FALSE, message=FALSE, warning=FALSE}
 year <- read_csv("GM_Consolidated_ByYear.csv")
 
 # quick plot
@@ -103,14 +112,12 @@ Graph1 + theme(legend.title = element_blank(),
 # dir.create("outputs") # create a new folder to hold the output files
 # ggsave("outputs/SC_OHB_plot.pdf")
 ```
-Figure 1. Non-Subsidized (Owl Head Buttes) vs. Subsidized (Stone Canyon) population 100% MCPs by number of fixes across the whole study interval.
+Figure 1 | Non-Subsidized (Owl Head Buttes) vs. Subsidized (Stone Canyon) population 100% MCPs by number of fixes across the whole study interval.
 
 
-
-<span style="color:red">Raw Means of Overall Home Range by Sex.</span>
  
                                                     
-Table 2. Group home range means of raw data of Stone Canyon and Owl Head Buttes. Grouped by environment and sex.
+Table 2 | Group 100% MCP home range means of raw data of Stone Canyon and Owl Head Buttes. Grouped by environment and sex.
 ```{r Table 2. Group Means, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # YR_GRP_Means <- year %>% 
 #         group_by(Environment,Sex) %>% 
@@ -124,12 +131,21 @@ kable(YR_GRP_Means, format = "pandoc", caption = 'Group Means of Overall Home Ra
 ```
 
 
+Table 3 | Group 95% MCP home range means of raw data of Stone Canyon and Owl Head Buttes. Grouped by environment and sex.
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+YR_GRP_Means95 <- summarySE(year, measurevar="Home_Range_95mcp", groupvars=c("Environment","Sex"),na.rm = TRUE)
 
-```{r Fig. 2 Raw Overal Mean HR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE, message=FALSE}
+kable(YR_GRP_Means95, format = "pandoc", caption = 'Group Means of Overall 95% MCP Home Ranges at Stone Canyon and Owl Head Buttes')
+```
 
-# ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,fill=Environment))+geom_bar(stat='identity',position='dodge')+geom_errorbar(aes(ymin=Home_Range_100mcp-SE, ymax=Home_Range_100mcp+SE), width=.1,position=position_dodge(.9))
 
-Raw.YearHR<-ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,color=Environment))+geom_point(position=position_dodge(.1))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se), width=.1,position=position_dodge())+ggtitle("Overall Home Ranges by Sex")+xlab("Sex")+ylab("Area (ha) using 100% MCP")+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+pd_RM <- position_dodge(0.1)
+
+Raw.YearHR<-ggplot(YR_GRP_Means, aes(x=Sex,y=Home_Range_100mcp,group=Environment))+geom_point(aes(shape = factor(Environment)), size = 2,position=position_dodge(.1))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se), width=.1,position=position_dodge())+ggtitle("Overall Home Ranges by Sex and Population (100% MCP)")+xlab("Sex")+ylab("Area (ha)")+
   theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
 
 Raw.YearHR + theme(legend.title = element_blank(),
@@ -139,235 +155,24 @@ Raw.YearHR + theme(legend.title = element_blank(),
                      legend.key = element_blank(),
                      legend.box.background = element_rect(colour = "black"))
 ```
- Figure 2. Raw overall mean home ranges between environment and sex.
- 
- 
-<span style="color:blue">Repeated measures ANOVA for Yearly Home Ranges by Sex.</span>
+Figure 3 | Raw overall mean home ranges between environment and sex. Note, that before adjusted home ranges, males exhibit smaller overall home ranges at Stone Canyon, than males of Owl Head Buttes.
 
 
-```{r Repeated Measures ANOVA YEAR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-# Get p-values from mixed model F values:
-library(lme4)
-library(readr)
-year <- read_csv("GM_Consolidated_ByYear.csv")
-
-lmemodel.year<-lmer(Home_Range_100mcp~Environment+Year+Sex+N100+(1|Gila),data = year)
-summary(lmemodel.year)
-```
 
 
-<span style="color:blue">Directional means of home range using the least square means based on sex between Stone Canyon and Owl Head Buttes.</span>
 
+<span style="color:blue">Gila Monster Yearly Home Range Shifts of 100% MCPs.</span>
 
-```{r Directional Means, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-library(ordinal)
-library(lsmeans)
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 
-RMmod.year<-lmer(Home_Range_100mcp~Environment+N100+Year+Sex+N100+(1|Gila),data = year)
+mcp_analysis.POLY <- function(filename, percentage){
+  data <- read.csv(file = filename,stringsAsFactors = FALSE)
+  data.sp <- data[, c("LIZARDNUMBER", "EASTING", "NORTHING")]
+  coordinates(data.sp) <- c("EASTING", "NORTHING")
+  proj4string(data.sp) <- CRS.SC
+  mcp_out <- mcp(data.sp, percentage, unout="ha")
+}
 
-RM.marginal <- lsmeans(RMmod.year, 
-                    ~ Environment)
-# RM.marginal
-
-## CATAGORIZE LSM GRAPH BY SEX BETWEEN ENVIRONMENT:
-refRM_sex <- lsmeans(RMmod.year, specs = c("Sex","Environment"))
-# refRM_sex
-ref_dfRM_sex <- as.data.frame(summary(refRM_sex))
-pd_RM <- position_dodge(0.1)
-g4RM_sex <- ggplot(ref_dfRM_sex, aes(x=Sex, y=lsmean,group=Environment, colour=Environment))+
-  geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=pd_RM) +
-  geom_point(position=pd_RM)+theme_classic()+ggtitle("Adjusted Overall Home Ranges by Sex")+xlab("Sex")+ylab("Area (ha) using 100% MCP")+
-  theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
-# RM_LSMgraph_sex<-print(g4RM_sex)
-# ggsave("outputs/LSM_Year_plot.pdf")
-g4RM_sex + theme(legend.title = element_blank(),
-                     legend.justification=c(0,1),
-                     legend.position=c(0.05, 0.95),
-                     legend.background = element_blank(),
-                     legend.key = element_blank(),
-                     legend.box.background = element_rect(colour = "black"))
-# ggsave("outputs/LSM_Year_plot.pdf")
-```
-Figure 3. Adjusted means of home ranges between environment and sex. Adjusted for sample size, year and sex. 
-
-
-Post-Hoc comparisons between sexes:
-```{r Comps for Sex, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-RMmod.year<-lmer(Home_Range_100mcp~Environment+N100+Year+Sex+N100+(1|Gila),data = year)
-Sex.emm.oa <- emmeans(RMmod.year, "Environment","Sex")
-pairs(Sex.emm.oa)
-```
-
-
-Graphical Comparisons of Sex between the two populatins:
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-plot(Sex.emm.oa, comparisons = TRUE)
-```
-
-
-Table 3. Direction means of home range after being adjusted for year, sex and sample size.
-```{r Table of Least Square Means, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-kable(ref_dfRM_sex, format = "pandoc", caption = 'Adjusted Means of Male vs. Female home ranges at Stone Canyon and Owl Head Buttes.') 
-```
- 
-  
-<span style="color:blue">Seasonal Home Range.</span>
-
-Home range analysis broken down by five seasons; Emergence, Dry, Monsoon, Post Monsoon. The start of emergence was defined by when movement patterns increased from none/minimal to the start of high activity. Effort was taken to match as closely as possible to the Owl Head Buttes emergence date interval. Monsoon season was adjusted using NOAA climate data. The start of was defined when the mean dew point temperatures of three consecutive days were greater than 55 degrees. 
-
-Scaling home range analyses by seasonal estimates reduces the number or locations for each lizard. 100 percent MCPs were used for seasonal home range analyses to avoid any further reduction of locations for each estimation.                                                                                                                                                    
-Table 4. Raw group means of home ranges grouped by environment season.
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-seasonal<-read.csv("SC_Seasonal_Data.csv")
-
-library(Rmisc)
-
-SEAS_GRP_Means <- summarySE(seasonal, measurevar="Home_Range_100mcp", groupvars=c("Environment","Season"), na.rm = TRUE)
-
-# SEAS_GRP_Means
-kable(SEAS_GRP_Means, format = "pandoc", caption = 'Raw Group Means of Seasonal Home Ranges at Stone Canyon')
-```
-
-                                                                                              
-                                                                                              
-                                                                                              
-```{r Raw Seasonal HR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-Raw.SeasHR<-ggplot(SEAS_GRP_Means, aes(x=Season,y=Home_Range_100mcp,color=Environment))+geom_point(position=position_dodge(.1))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se), width=.1,position=position_dodge())+ggtitle("Raw Seasonal Home Ranges")+xlab("Season")+ylab("Area (ha) using 100% MCP")+
-  theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
-
-Raw.SeasHR<-Raw.SeasHR + theme(legend.title = element_blank(),
-                     legend.justification=c(0,1),
-                     legend.position=c(0.05, 0.95),
-                     legend.background = element_blank(),
-                     legend.key = element_blank(),
-                     legend.box.background = element_rect(colour = "black"))
-Raw.SeasHR+scale_x_discrete(limits= c("Emergence","Dry","Monsoon","Post_Monsoon"))
-```
-Figure 4. Raw seasonal home range means grouped by environment and sex. Both the non-subsidized and subsidized populations follow similar patterns, but with the subsidized means less than those of the non-subsidized population.
-
-
-<span style="color:blue">Repeated measures ANOVA for Seasons.</span>
-
-
-Table 5. Adjusted seasonal means of home range between the non-subsidized and subsidized populations. The emergence and post-monsoon season between the two populations show similar home range sizes. Differences in home range sizes between the two populations is during the dry and monsoon seasons.
-```{r Table 5. Adjusted Seasonal HR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-lsmean.seasonal<-read.csv("seasonal.lsmeans_table.csv")
-kable(lsmean.seasonal, format = "pandoc", caption = 'Adjusted Seasonal Means of Home Ranges at Stone Canyon and Owl Head Buttes.')
-```
-
-
-```{r RMANOVA Seasonal HR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-library(lme4)
-library(readr)
-library(lmerTest)
-# seasonal<-read.csv("SC_Seasonal_Data.csv")
-
-RM.mod.Season <- lmer(Home_Range_100mcp~Environment+Season+Sex+N+(1|Gila), data=seasonal)
-summary(RM.mod.Season)
-
-# anova(RM.mod.Season)
-
-# # marginal.season <- lsmeans(RM.mod.Season, 
-# #                    ~ Environment)
-# # marginal.season
-```
-                                                                                                                                                                                                                                                                                            
-
-```{r Adjusted Seasonal HR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-library(ordinal)
-library(lsmeans)
-
-# # marginal.season <- lsmeans(RM.mod.Season, 
-# #                    ~ Environment)
-# # marginal.season
-# 
-# ref.season2 <- lsmeans(RM.mod.Season, specs = c("Season","Environment"))
-# # ref.season2
-# ref_dfseason2 <- as.data.frame(summary(ref.season2))
-# pd.RMS <- position_dodge(0.1)
-# g4season2 <- ggplot(ref_dfseason2, aes(x=Season, y=lsmean,group=Environment, colour=Environment))+
-#   geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=pd.RMS) +
-#   geom_line(position=pd.RMS)+
-#   geom_point(position=pd.RMS)+theme_classic()+ggtitle("Adjusted Seasonal Home Ranges")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
-# # LSMgraphseason<-print(g4season)
-# g4season2<-g4season2 + theme(legend.title = element_blank(),
-#                            legend.justification=c(0,1),
-#                            legend.position=c(0.05, 0.95),
-#                            legend.background = element_blank(),
-#                            legend.key = element_blank(),
-#                            legend.box.background = element_rect(colour = "black"))
-g4season2+scale_x_discrete(limits= c("Emergence","Dry","Monsoon","Post_Monsoon"))
-# ggsave("outputs/LSM_Season.pdf")
-```
-Figure 5. Adjusted seasonal home ranges between the two populations after being adjusted for season, sex and sample size by RMANOVA. 
-                                                                                                                                                                                                                                                                                              
-Table 6. Mean individual seasoanl home ranges pooled from the entire study period. Missing values are depicted where no locations for that animal during that period were successfull.
-```{r Table 6. Mean Ind. Seasonal HR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-Seas.Ind.Means<-read.csv("Seasonal HR Table.csv")
-kable(Seas.Ind.Means, format = "pandoc", caption = 'Seasonal Individual Home Ranges.')
-```
-                                                                                                                                                                                                                                                                                            
-                                                                                              
-
-<span style="color:blue">Gila Monster Home Range Overlap of 100% MCPs.</span>
-
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-## Set projection for mapping:
-CRS.SC<-CRS("+proj=utm +zone=12 +ellps=WGS84 +units=m +no_defs")
-```
-
-```{r Interactive Map of 100% MCPs, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-## Create MCP Polygon for mapview():
-M67_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
-M69_MCP<-mcp_analysis.POLY('./M69/M69 .csv', percentage= 100)
-M255_MCP<-mcp_analysis.POLY('./M255/M255 .csv', percentage= 100)
-M215_MCP<-mcp_analysis.POLY('./M215/M215 .csv', percentage= 100)
-M14_MCP<-mcp_analysis.POLY('./M14/M14 .csv', percentage= 100)
-M119_MCP<-mcp_analysis.POLY('./M119/M119 .csv', percentage= 100)
-M112_MCP<-mcp_analysis.POLY('./M112/M112 .csv', percentage= 100)
-
-F66_MCP<-mcp_analysis.POLY('./F66/F66 .csv', percentage= 100)
-F36_MCP<-mcp_analysis.POLY('./F36/F36 .csv', percentage= 100)
-F252_MCP<-mcp_analysis.POLY('./F252/F252 .csv', percentage= 100)
-F214_MCP<-mcp_analysis.POLY('./F214/F214 .csv', percentage= 100)
-F200_MCP<-mcp_analysis.POLY('./F200/F200 .csv', percentage= 100)
-F147_MCP<-mcp_analysis.POLY('./F147/F147 .csv', percentage= 100)
-F146_MCP<-mcp_analysis.POLY('./F146/F146 .csv', percentage= 100)
-F137_MCP<-mcp_analysis.POLY('./F137/F137 .csv', percentage= 100)
-F135_MCP<-mcp_analysis.POLY('./F135/F135 .csv', percentage= 100)
-F114_MCP<-mcp_analysis.POLY('./F114/F114 .csv', percentage= 100)
-F104_MCP<-mcp_analysis.POLY('./F104/F104 .csv', percentage= 100)
-
-Male.MCP <- rbind(M67_MCP,M69_MCP,M255_MCP,M215_MCP,M14_MCP,M119_MCP,M112_MCP)
-
-Female.MCP <- rbind(F66_MCP,F36_MCP,F252_MCP,F214_MCP,F200_MCP,F147_MCP,F146_MCP,F137_MCP,
-                    F135_MCP,F114_MCP,F104_MCP)
-
-mapviewOptions(basemaps = c("OpenStreetMap","Esri.WorldImagery","OpenTopoMap"),
-               na.color = "magenta",
-               layers.control.pos = "topleft")
-
-mapview(Male.MCP, legend=F, zcol="id", col.regions = c("blue"), alpha.regions=0.3) + 
-  mapview(Female.MCP, legend=F, zcol = "id", col.regions = c("red"), alpha.regions=0.3)
-```
-Figure 4. Home Range overlap by sex of 100% MCPs at Stone Canyon. Red polygons represent female lizards, and blue represents male lizards. 
-
-The Stone Canyon population seems to exhibit greater female-female overlap as well as considerable overlap of male-female home ranges. There appears to be limited male-male overlap, with occurance happening in only two male-male home range polygons. This finding is in contrast to the Owl Head buttes study which revealed that there was a large degree of overlap among male-female and male-male overlaps (Table 4). Gillardo concluded that, in their study, the high degree of overlap in males-males interactions may be due to having larger home ranges for mate searching activities. Males may have and increased home range size to maximize their access to multiple females. She concluded that the lack of female-female overlap may be due to smaller home range sizes. 
-
-At Stone Canyon, males have reduced home range sizes (Table 2; Fig. 2). However, males still retain home range overlap with multiple females while having reduced contact with other males. This may be in response to nutrient subsidies that reduce the need to have expanded home range sizes for foraging activities for both males and females. There may also be a higher density of females as a response to resource availability and reduced range requirements. Males are not forced to expand home ranges for mate searching to the extant that individuals at Owl Head Buttes may be subject to. 
-
-Table 4. Home range overlap of Gila Monsters at the nutrient subsidized site. Male-male overlaps only occured between two pairs of males: M14-M69 and M119-M215 at 0.5 ha. and 19.5 ha. respectively and were therefore not included in the table. 
-```{r Table 4. HR Overlap, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-OL_Table<-read.csv("OverLap_Table.csv")
-
-kable(OL_Table, format = "pandoc", caption = 'Home range overlap of Stone Canyon Gila Monsters using 100% MCPs.')
-```
-
-
-<span style="color:blue">Gila Monster Home Range Shifts of 100% MCPs.</span>
-
-```{r Fig 5. Yearly HR Shifts, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-## Create MCP polygons by YEAR:
 M215_mcp.11<-mcp_analysis.POLY("./M215/2011 .csv", percentage= 100)
 M215_mcp.12<-mcp_analysis.POLY("./M215/2012 .csv", percentage= 100)
 F104_mcp.08<-mcp_analysis.POLY("./F104/2008 .csv", percentage= 100)
@@ -434,6 +239,7 @@ M69_mcp.09T <- fortify(M69_mcp.09, region = "id")
 M69_mcp.10T <- fortify(M69_mcp.10, region = "id")
 M215_mcp.11T <- fortify(M215_mcp.11, region = "id")
 M215_mcp.12T <- fortify(M215_mcp.12, region = "id")
+
 
 mcp.shift.TEST4 <- ggplot() +
   geom_polygon(data=F104_mcp.08T, aes(x=F104_mcp.08T$long, y=F104_mcp.08T$lat),
@@ -505,9 +311,133 @@ mcp.shift.TEST4 <- ggplot() +
 
 mcp.shift.TEST4
 ```
+Figure 4 | Yearly home range shifts of sub-sampled home ranges of 8 lizards, both males and females. Home range shifts appear to be relativley stable over study years.
 
 
-```{r Fig. 6. Seasonal HR Shifts, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ 
+<span style="color:blue">Repeated measures ANOVA for Yearly Home Ranges by Sex.</span>
+
+Repeated Measure ANOVA for 100% MCP overall home ranges
+```{r Repeated Measures ANOVA YEAR, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Get p-values from mixed model F values:
+library(lme4)
+library(readr)
+year <- read_csv("GM_Consolidated_ByYear.csv")
+
+RMmod.year<-lmer(Home_Range_100mcp~Environment+Year+Sex+N100+Environment*Sex+
+                   (1|Gila),data = year)
+summary(RMmod.year)
+```
+
+ANOVA Table: 100% MCP
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+anova(RMmod.year)
+```
+
+
+Repeated Measure ANOVA for 95% MCP overall home ranges
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+RMmod.year95<-lmer(Home_Range_95mcp~Environment+Year+Sex+N100+Environment*Sex+
+                   (1|Gila),data = year)
+summary(RMmod.year95)
+```
+
+
+ANOVA Table: 95% MCP
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+anova(RMmod.year95)
+```
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+RMmod.year100<-lmer(Home_Range_100mcp~Environment+Year+Sex+N100+Environment*Sex+(1|Gila),data = year)
+
+RM.marginal <- lsmeans(RMmod.year100, 
+                    ~ Environment)
+# RM.marginal
+
+## CATAGORIZE LSM GRAPH BY SEX BETWEEN ENVIRONMENT:
+refRM_sex <- lsmeans(RMmod.year100, specs = c("Environment","Sex"))
+
+# refRM_sex
+ref_dfRM_sex <- as.data.frame(summary(refRM_sex))
+pd_RM <- position_dodge(0.1)
+
+LSM.YearHR<-ggplot(ref_dfRM_sex, aes(x=Sex,y=lsmean,group=Environment))+geom_point(aes(shape = factor(Environment)), size = 2,position=position_dodge(.1))+geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE), width=.1,position=position_dodge())+ggtitle("Adjusted Home Ranges by Sex and Population (100% MCP)")+xlab("Sex")+ylab("Area (ha)")+
+  theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+
+LSM.YearHR + theme(legend.title = element_blank(),
+                     legend.justification=c(0,1),
+                     legend.position=c(0.05, 0.95),
+                     legend.background = element_blank(),
+                     legend.key = element_blank(),
+                     legend.box.background = element_rect(colour = "black"))
+```
+Figure 5 | Adjusted home ranges between sexes of non-subsidized and subsidized populations. Adjusted for environment, year, sex, and sample size. 
+ 
+
+
+
+
+Table 3. Directional means of home range after being adjusted for year, sex and sample size.
+```{r echo=FALSE, paged.print=FALSE}
+kable(ref_dfRM_sex, format = "pandoc", caption = 'Adjusted Group Means of Overall Home Ranges at Stone Canyon and Owl Head Buttes')
+```
+
+
+
+Post-Hoc comparisons between sexes and environment:
+```{r Comps for Sex, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+RMmod.year.Em<-lmer(Home_Range_100mcp~Environment+Year+Sex+N100+Environment*Sex+
+                      (1|Gila),data = year)
+
+# Sex.emm.oa <- emmeans(RMmod.year.Em, c("Environment","Sex"))
+# pairs(Sex.emm.oa)
+
+emm_s.t2 <- emmeans(RMmod.year.Em, pairwise ~ Sex | Environment)
+emm_s.t2
+```
+
+
+
+Graphical Comparisons of Sex Within Each Environment:
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+plot(emm_s.t2, comparisons = TRUE, xlab = "Mean Home Range", ylab = "Sex")
+# plot(Seas.MeansT, comparisons = TRUE)
+
+```
+Figure 6 | Pairwise comparisons of home range between sexes within each environment. If red arrows overlap those of others, then  there is no significant statistical difference. 
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+emm_s.t3 <- emmeans(RMmod.year.Em, pairwise ~ Environment | Sex)
+emm_s.t3
+```
+
+
+
+Graphical Comparisons of Sex between the two populations:
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+plot(emm_s.t3, comparisons = TRUE, xlab = "Mean Home Range", ylab = "Sex")
+```
+Figure 7 | Paiwise comparisons of sex between environments. If red arrows overlap those of others, then  there is no significant statistical difference. 
+
+
+
+<span style="color:blue">Seasonal Home Range.</span>
+
+
+Home range analysis broken down by five seasons; Emergence, Dry, Monsoon, Post Monsoon. The start of emergence was defined by when movement patterns increased from none/minimal to the start of high activity. Effort was taken to match as closely as possible to the Owl Head Buttes emergence date interval. Monsoon season was adjusted using NOAA climate data. The start of was defined when the mean dew point temperatures of three consecutive days were greater than 55 degrees. 
+
+Scaling home range analyses by seasonal estimates reduces the number or locations for each lizard. 100% MCPs were used for seasonal home range analyses to avoid any further reduction of locations for each estimation.
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 ## Create MCP polygons by SEASON:
 M215_mcp.EM<-mcp_analysis.POLY("./M215/Emergence .csv", percentage= 100)
 M215_mcp.DRY<-mcp_analysis.POLY("./M215/Dry .csv", percentage= 100)
@@ -649,98 +579,413 @@ mcp.shift.TEST5 <- ggplot() +
 mcp.shift.TEST5
 
 ```
+Figure 8 | Seasonal home range shifts of four lizards. Emergence and post-monsoon ranges stay realatively within each other. All seasonal polygons stay relatively stable without any major shifts away from other seasonal ranges. 
+
+
+
+
+Table 5 | Group means of seasonal home ranges between Stone Canyon (subsidized) and Owl Head Buttes (non-subsidized). These means are averaged across sex. 
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+seasonal<-read.csv("SC_Seasonal_Data.csv")
+
+library(Rmisc)
+
+SEAS_GRP_Means <- summarySE(seasonal, measurevar="Home_Range_100mcp", groupvars=c("Environment","Season"), na.rm = TRUE)
+
+# SEAS_GRP_Means
+kable(SEAS_GRP_Means, format = "pandoc", caption = 'Raw Group Means of Seasonal Home Ranges at Stone Canyon')
+```
+
+
+
+
+RMANOVA on Seasonal Home Ranges:
+```{r}
+library(lme4)
+library(readr)
+library(lmerTest)
+# seasonal<-read.csv("SC_Seasonal_Data.csv")
+
+RM.mod.Season <- lmer(Home_Range_100mcp~Environment+Season+Sex+N+Environment*Season+(1|Gila), data=seasonal)
+summary(RM.mod.Season)
+
+# anova(RM.mod.Season)
+
+# # marginal.season <- lsmeans(RM.mod.Season, 
+# #                    ~ Environment)
+# # marginal.season
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+anova(RM.mod.Season)
+```
+
+
+
+
+Table 6 | Seasonal home range means between Stone Canyon (subsidized) and Owl Head Buttes (non-subsidized) popuations for males and females. These are raw means before being adjusted for environment, season, sex, and sample size.
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+SEAS_GRP_TEST <- summarySE(seasonal, measurevar="Home_Range_100mcp", groupvars=c("Environment","Season","Sex"), na.rm = TRUE)
+
+# SEAS_GRP_Means
+kable(SEAS_GRP_TEST, format = "pandoc", caption = 'Seasonal Means by Sex Between Populations')
+```
+
+
+
+
+```{r}
+# SEAS.TEST<-ggplot(SEAS_GRP_TEST,aes(x=Season,y=Home_Range_100mcp,group=Environment))+geom_point(aes(shape = factor(Sex)), size=2,position=position_dodge(.5))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se),position = position_dodge(.5), width = 0.2)+ggtitle("Seasonal Means")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+# 
+# SEAS.TEST<-SEAS.TEST + theme(legend.title = element_blank(),
+#                      legend.justification=c(0,1),
+#                      legend.position=c(0.05, 0.95),
+#                      legend.background = element_blank(),
+#                      legend.key = element_blank(),
+#                      legend.box.background = element_rect(colour = "black"))
+# SEAS.TEST+scale_x_discrete(limits= c("Emergence","Dry","Monsoon","Post_Monsoon"))
+
+# SEAS_GRP_TEST$Season_f = factor(SEAS_GRP_TEST$Season,
+#                                 levels=c('Emergence','Dry','Monsoon','Post_Monsoon'))
+#
+SEAS.TEST<-ggplot(SEAS_GRP_TEST,aes(x=Environment,y=Home_Range_100mcp,group=c("Season")))+geom_point(aes(shape = factor(Sex)), size=2,position=position_jitter(.2))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se),position=position_dodge(),width=.1)+ggtitle("Seasonal Means")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+
+SEAS.TEST<-SEAS.TEST + theme(legend.title = element_blank(),
+                     legend.justification=c(0,1),
+                     legend.position=c(.82, 0.95),
+                     legend.background = element_blank(),
+                     legend.key = element_blank(),
+                     legend.box.background = element_rect(colour = "black"))
+SEAS.TEST<-SEAS.TEST+facet_grid(cols=vars(Season))
+SEAS.TEST
+```
+Figure 9 | Raw seasonal means of sexes between each environment. *WORKING GRAPH...
+
+
+
+Adjusted Seasonal Means
+```{r}
+RM.mod.Season <- lmer(Home_Range_100mcp~Environment+Season+Sex+N+Environment*Season+(1|Gila), data=seasonal)
+
+# RM.marginal <- lsmeans(RM.mod.Season, 
+#                     ~ Environment)
+# RM.marginal
+
+## CATAGORIZE LSM GRAPH BY SEX BETWEEN ENVIRONMENT:
+refRM_season <- lsmeans(RM.mod.Season, specs = c("Environment","Season","Sex"))
+
+# refRM_sex
+ref_dfRM_season <- as.data.frame(summary(refRM_season))
+pd_RM <- position_dodge(0.1)
+
+LSM.SeasHR<-ggplot(ref_dfRM_season,aes(x=Environment,y=lsmean,group=c("Season")))+geom_point(aes(shape = factor(Sex)), size=2,position=position_jitter(.2))+geom_errorbar(aes(ymin=lsmean-SE, ymax=lsmean+SE),position=position_dodge(),width=.1)+ggtitle("Seasonal Means")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
+
+LSM.SeasHR<-LSM.SeasHR + theme(legend.title = element_blank(),
+                     legend.justification=c(0,1),
+                     legend.position=c(0.82, 0.95),
+                     legend.background = element_blank(),
+                     legend.key = element_blank(),
+                     legend.box.background = element_rect(colour = "black"))
+LSM.SeasHR<-LSM.SeasHR+facet_grid(cols=vars(Season))
+LSM.SeasHR
+```
+Figure 10 | Adjusted seasonal home range means of sexes between environments. *WORKING GRAPH...
+
+
+
+
+Post-Hoc comparisons between populations for seasonal home range analysis:
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+emm_s.t <- emmeans(RM.mod.Season, pairwise ~ Environment | Season)
+emm_s.t
+```
+
+
+Graphical Comparisons of seasons between the two populatins:
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# plot(Sex.emm.seas, comparisons = TRUE)
+plot(emm_s.t, comparisons = TRUE)
+```                                            
+Figure 11 | Pairwise comparisons of each season between environments. Overlapping red bars indicate no statistical difference. 
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+# Seas.MeansT<-emmeans(RM.mod.Season, list(pairwise ~ Environment, pairwise ~ Season))
+# Seas.MeansT
+
+emm_s.t4 <- emmeans(RM.mod.Season, pairwise ~ Season | Environment)
+emm_s.t4
+```
+
+
+Graphical Comparisons between seasons within the two populations:
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+plot(emm_s.t4, comparisons = TRUE)
+```
+Figure 12 | Pairwise comparisons between seasons within each environment. Overlapping red bars indicate no statistical difference. 
+
+
+
+Pairwise seasonal comparisons between sexes of the subsidized population
+```{r}
+sub <- subset(seasonal, Environment == "subsidized")
+
+RM.mod.Sub <- lmer(Home_Range_100mcp~Season+Sex+N+Season*Sex+(1|Gila), data=sub)
+
+emm_s.t5 <- emmeans(RM.mod.Sub, pairwise ~ Sex | Season)
+emm_s.t5 
+```
+
+Graphical Comparisons between sex within the subsidized population:
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+plot(emm_s.t5, comparisons = TRUE)
+```
+
+
+
+Table 7 | Mean individual seasoanl home ranges pooled from the entire study period. Missing values are depicted where no locations for that animal during that period were successfull.
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+Seas.Ind.Means<-read.csv("Seasonal HR Table.csv")
+kable(Seas.Ind.Means, format = "pandoc", caption = 'Seasonal Individual Home Ranges.')
+```
+
+
+
+
+
+<span style="color:blue">Gila Monster Home Range Overlap of 100% MCPs.</span>
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+# mcp_analysis.POLY <- function(filename, percentage){
+#   data <- read.csv(file = filename,stringsAsFactors = FALSE)
+#   data.sp <- data[, c("LIZARDNUMBER", "EASTING", "NORTHING")]
+#   coordinates(data.sp) <- c("EASTING", "NORTHING")
+#   proj4string(data.sp) <- CRS.SC
+#   mcp_out <- mcp(data.sp, percentage, unout="ha")
+# }
+
+M67_MCP<-mcp_analysis.POLY('./M67/M67 .csv', percentage= 100)
+M69_MCP<-mcp_analysis.POLY('./M69/M69 .csv', percentage= 100)
+M255_MCP<-mcp_analysis.POLY('./M255/M255 .csv', percentage= 100)
+M215_MCP<-mcp_analysis.POLY('./M215/M215 .csv', percentage= 100)
+M14_MCP<-mcp_analysis.POLY('./M14/M14 .csv', percentage= 100)
+M119_MCP<-mcp_analysis.POLY('./M119/M119 .csv', percentage= 100)
+M112_MCP<-mcp_analysis.POLY('./M112/M112 .csv', percentage= 100)
+
+F66_MCP<-mcp_analysis.POLY('./F66/F66 .csv', percentage= 100)
+F36_MCP<-mcp_analysis.POLY('./F36/F36 .csv', percentage= 100)
+F252_MCP<-mcp_analysis.POLY('./F252/F252 .csv', percentage= 100)
+F214_MCP<-mcp_analysis.POLY('./F214/F214 .csv', percentage= 100)
+F200_MCP<-mcp_analysis.POLY('./F200/F200 .csv', percentage= 100)
+F147_MCP<-mcp_analysis.POLY('./F147/F147 .csv', percentage= 100)
+F146_MCP<-mcp_analysis.POLY('./F146/F146 .csv', percentage= 100)
+F137_MCP<-mcp_analysis.POLY('./F137/F137 .csv', percentage= 100)
+F135_MCP<-mcp_analysis.POLY('./F135/F135 .csv', percentage= 100)
+F114_MCP<-mcp_analysis.POLY('./F114/F114 .csv', percentage= 100)
+F104_MCP<-mcp_analysis.POLY('./F104/F104 .csv', percentage= 100)
+
+Male.MCP <- rbind(M67_MCP,M69_MCP,M255_MCP,M215_MCP,M14_MCP,M119_MCP,M112_MCP)
+Female.MCP <- rbind(F66_MCP,F36_MCP,F252_MCP,F214_MCP,F200_MCP,F147_MCP,F146_MCP,F137_MCP,
+                    F135_MCP,F114_MCP,F104_MCP)
+
+mapviewOptions(basemaps = c("OpenStreetMap","Esri.WorldImagery","OpenTopoMap"),
+               na.color = "magenta",
+               layers.control.pos = "topleft")
+
+mapview(Male.MCP, legend=F, zcol="id", col.regions = c("blue"), alpha.regions=0.3) + 
+  mapview(Female.MCP, legend=F, zcol = "id", col.regions = c("red"), alpha.regions=0.3)
+```
+Figure 13 | Interactive map: Home Range overlap by sex of 100% MCPs at Stone Canyon. Red polygons represent female lizards, and blue represents male lizards. 
+
+
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+kde_analysis.href.polygon <- function(filename, percentage){
+  data <- read.csv(file = filename,stringsAsFactors = FALSE)
+  data.sp <- data[, c("LIZARDNUMBER", "EASTING", "NORTHING")]
+  coordinates(data.sp) <- c("EASTING", "NORTHING")
+  proj4string(data.sp) <- CRS.SC
+  kde<-kernelUD(data.sp, h="href", kern="bivnorm", grid=1000)
+  ver <- getverticeshr(kde, percentage)
+  ver@proj4string<-CRS.SC
+  ver
+}
+
+M67_KDE<-kde_analysis.href.polygon('./M67/M67 .csv', percentage= 95)
+M69_KDE<-kde_analysis.href.polygon('./M69/M69 .csv', percentage= 95)
+M255_KDE<-kde_analysis.href.polygon('./M255/M255 .csv', percentage= 95)
+M215_KDE<-kde_analysis.href.polygon('./M215/M215 .csv', percentage= 95)
+M14_KDE<-kde_analysis.href.polygon('./M14/M14 .csv', percentage= 95)
+M119_KDE<-kde_analysis.href.polygon('./M119/M119 .csv', percentage= 95)
+M112_KDE<-kde_analysis.href.polygon('./M112/M112 .csv', percentage= 95)
+
+F66_KDE<-kde_analysis.href.polygon('./F66/F66 .csv', percentage= 95)
+F36_KDE<-kde_analysis.href.polygon('./F36/F36 .csv', percentage= 95)
+F252_KDE<-kde_analysis.href.polygon('./F252/F252 .csv', percentage= 95)
+F214_KDE<-kde_analysis.href.polygon('./F214/F214 .csv', percentage= 95)
+F200_KDE<-kde_analysis.href.polygon('./F200/F200 .csv', percentage= 95)
+F147_KDE<-kde_analysis.href.polygon('./F147/F147 .csv', percentage= 95)
+F146_KDE<-kde_analysis.href.polygon('./F146/F146 .csv', percentage= 95)
+F137_KDE<-kde_analysis.href.polygon('./F137/F137 .csv', percentage= 95)
+F135_KDE<-kde_analysis.href.polygon('./F135/F135 .csv', percentage= 95)
+F114_KDE<-kde_analysis.href.polygon('./F114/F114 .csv', percentage= 95)
+F104_KDE<-kde_analysis.href.polygon('./F104/F104 .csv', percentage= 95)
+
+Male.KDE <- rbind(M67_KDE,M69_KDE,M255_KDE,M215_KDE,M14_KDE,M119_KDE,M112_KDE)
+Female.KDE <- rbind(F66_KDE,F36_KDE,F252_KDE,F214_KDE,F200_KDE,F147_KDE,F146_KDE,F137_KDE,
+                    F135_KDE,F114_KDE,F104_KDE)
+
+mapviewOptions(basemaps = c("OpenStreetMap","Esri.WorldImagery","OpenTopoMap"),
+               na.color = "magenta",
+               layers.control.pos = "topleft")
+
+mapview(Male.KDE, legend=F, zcol="id", col.regions = c("blue"), alpha.regions=0.3) + 
+  mapview(Female.KDE, legend=F, zcol = "id", col.regions = c("red"), alpha.regions=0.3)
+```
+Figure 14 | Interactive map: Home Range overlap by sex of 95% KDEs at Stone Canyon. Red polygons represent female lizards, and blue represents male lizards. 
+
+
+
+
+The Stone Canyon population seems to exhibit greater female-female overlap as well as considerable overlap of male-female home ranges. There appears to be limited male-male overlap, with occurance happening in only two male-male home range polygons. This finding is in contrast to the Owl Head buttes study which revealed that there was a large degree of overlap among male-female and male-male overlaps (Table x). Gillardo concluded that, in their study, the high degree of overlap in males-males interactions may be due to having larger home ranges for mate searching activities. Males may have and increased home range size to maximize their access to multiple females. She concluded that the lack of female-female overlap may be due to smaller home range sizes. 
+
+At Stone Canyon, males have reduced home range sizes (Table 6; Fig. 4). However, males still retain home range overlap with multiple females while having reduced contact with other males. This may be in response to nutrient subsidies that reduce the need to have expanded home range sizes for foraging activities for both males and females. There may also be a higher density of females as a response to resource availability and reduced range requirements. Males are not forced to expand home ranges for mate searching to the extant that individuals at Owl Head Buttes may be subject to. 
+
+
+
+Table 8 | Home range overlap of Gila Monsters at the nutrient subsidized site. Male-male overlaps only occured between two pairs of males: M14-M69 and M119-M215 at 0.5 ha. and 19.5 ha. respectively and were therefore not included in the table. 
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+OL_Table<-read.csv("OverLap_Table.csv")
+
+kable(OL_Table, format = "pandoc", caption = 'Home range overlap of Stone Canyon Gila Monsters using 100% MCPs.')
+```
+
 
 
 
 <span style="color:blue">Gila Monster Proportion of Refuge Use.</span>
-
-
-```{r Mixed Effects RMANOVA Refuge Use, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+                                                                                                                                                                                              Mixed effects RMANOVA for seasonal refuge use. Refuge catagorizations include Rock, Burrow and Midden.
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 Refugia <- read.csv('./Refuge_Use/Refugia_Input.csv')
 
 Ref_Ind<-lmer(AVG_PROP_YR_LIZ~COVERTYPE+SEASON+SEX+YEAR+COVERTYPE*SEASON+(1|LIZARDNUMBER),data = Refugia)
 summary(Ref_Ind)
 ```
 
-```{r ANOVA Table for ME RMANOVA Refuge Use, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ANOVA table of refuge use RMANOVA for complete data set:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 anova(Ref_Ind)
 ```
 
-There was no effect of year on refuge use. Performed Mixed Effects RMANOVA for each refuge type, then conducted pairwise comparisons for each refuge type across seasons. For post-hoc pariwise comparisons, used Bonferonni adjusted p-value.
-                                                                                                                                                                                               
+```{r eval=FALSE, include=FALSE}
+emm_refuge <- emmeans(Ref_Ind, pairwise ~ COVERTYPE | SEASON)
+emm_refuge
+```
 
-Run RMANOVA for each refuge type and pairwise comparisons across each season:
+
+
+RMANOVA of the entire data set suggested that there was no affect of year on refuge use 
+(df = 5, F = 1.94, P = 0.09). Therefore, I performed Mixed Effects RMANOVA for each refuge type while not including year in the model, then conducted pairwise comparisons for each refuge type across seasons.
+
+ 
+ 
+Ran RMANOVA for each refuge type and pairwise comparisons across each season:
 
 Rocks
-```{r RMANOVA for Refuge Type: Rocks, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-# Ref.Emergence <- slice()
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
 Rocks <- subset(Refugia, COVERTYPE == "Rocks")
 # View(Rocks)
 
 Rocks_mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Rocks)
-summary(Rocks_mod)
+# summary(Rocks_mod)
 anova(Rocks_mod)
 ```
 
-```{r Seasonal Pairwise Comp.: Rocks, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-attach(Rocks)
+Pairwise comparisons between seasons for rock refuge sites:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# attach(Rocks)
+# pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
 
-pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
+emm_rocks <- emmeans(Rocks_mod, pairwise ~ SEASON)
+emm_rocks
 ```
 
 
 
 Burrow
-```{r RMANOVA for Refuge Type: Burrow, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 Burrow <- subset(Refugia, COVERTYPE == "Burrow")
 # View(Burrow)
 
 Burrow.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Burrow)
-summary(Burrow.mod)
+# summary(Burrow.mod)
 anova(Burrow.mod)
 ```
 
-```{r Seasonal Pairwise Comp.: Burrow, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-attach(Burrow)
+Pairwise comparisons between seasons for burrow refuge sites:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# attach(Burrow)
+# pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
 
-pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
+emm_burrow <- emmeans(Burrow.mod, pairwise ~ SEASON)
+emm_burrow
 ```
 
 
 
 Midden
-```{r RMANOVA for Refuge Type: Midden, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 Midden <- subset(Refugia, COVERTYPE == "Midden")
 # View(Midden)
 
 Midden.mod<-lmer(SEAS_PROP_LIZ~SEASON+SEX+SEASON*SEX+(1|LIZARDNUMBER),data = Midden)
-summary(Midden.mod)
+# summary(Midden.mod)
 anova(Midden.mod)
 ```
 
-```{r Seasonal Pairwise Comp.: Midden, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
-attach(Midden)
+Pairwise comparisons between seasons for midden refuge sites:
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+# attach(Midden)
+# pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
 
-pairwise.t.test(AVG_PROP_YR_LIZ,SEASON, p.adj = "bonferroni")
+emm_midden <- emmeans(Midden.mod, pairwise ~ SEASON)
+emm_midden
 ```
                                                                                                 
-Analyses suggests that there is an effect of season across all three refuge types, but there is no interaction of sex and season on chosen refuge types (Tables 5-7). After performing post-hoc pairwise comparisons, the proportion of refuge use for rocks was higher in emergence (0.37). This may be due to Gila Monsters prefering more rocky refugia for hibernacula use. However, lizards used rocky refugia in smaller proportions throught the dry, monsoon and post-monsoon seasons(Table 5). During the dry season Gila Monsters exhibited a higher proportion of refuge use in burrows (0.26), but mainted about the same of burrow use throug the monsoon season (Table 6.). Gila Monsters chose midden refuge types in dry and monsoon seasons (0.21 and 0.23 respectively), with the majority midden selection in the monsoon. However, both the burrow and midden refuge types were both used throughtout the dry and monsoon seasons.                                                                                                                                                                                  
-Table 5. Mean proportinal use of refuge types across easch season by sex.
-```{r Table 5. Proportinal Refuge Use, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+Analyses suggests that there is an effect of season across all three refuge types, but there is no interaction of sex and season on chosen refuge types (Tables 5-7). After performing post-hoc pairwise comparisons, the proportion of refuge use for rocks was higher in emergence (0.37). This may be due to Gila Monsters prefering more rocky refugia for hibernacula use. However, lizards used rocky refugia in smaller proportions throught the dry, monsoon and post-monsoon seasons(Table 5). During the dry season Gila Monsters exhibited a higher proportion of refuge use in burrows (0.26), but maintained about the same of burrow use through the monsoon season (Table 6.). Gila Monsters chose midden refuge types in dry and monsoon seasons (0.21 and 0.23 respectively), with the majority midden selection in the monsoon. However, both the burrow and midden refuge types were both used throughtout the dry and monsoon seasons.                                                                                                                                                                                  
+Table 9 | Mean proportinal use of refuge types across each season by sex.
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 Refuge.Prop<-read.csv("./Refuge_Use/Refuge Prop Table.csv")
 
 kable(Refuge.Prop, format = "pandoc", longtable=TRUE, caption = 'Refuge Use Proportional Means by Sex and Season')
 ```
-                                                                                                                                                                                              Table 6. Post-Hoc pairwise comparisons of refuge types between seasons.
-```{r Table 6. Post Hoc Refuge Comps by Season, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+
+
+
+
+Table 10 | Post-Hoc camparisons of each refuge type between seasonal combinations.
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 Refuge.Sig<-read.csv("./Refuge_Use/Refuge Sig Table.csv")
 
 kable(Refuge.Sig, format = "pandoc", longtable=TRUE,caption = 'Post Hoc Pairwise Comparisons of Refuge Types')
 ```
-                                                                                                                                                                                              Table 7. ANOVA table after conducting Mixed Effects RMANOVA for each refuge type across seasons.
+
+
+
+Table 11. ANOVA table after conducting Mixed Effects RMANOVA for each refuge type across seasons.
 ```{r RM ANOVA table for Refuge Use, echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 RM.table<-read.csv("./Refuge_Use/RM ANOVA table Refuge.csv")
 
 kable(RM.table, format = "pandoc", longtable=TRUE,caption = 'ANOVA Table of RM Analysis for Refuge Use')
 ```
+
+
+
 
