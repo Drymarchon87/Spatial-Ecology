@@ -1,7 +1,6 @@
 ---
 title: "Spatial Ecology Gila Monsters in a Resource Subsidized Environment"
 author: "M. Pierson"
-date: "28 August 2019"
 output:
   html_notebook: default
   pdf_document: default
@@ -382,7 +381,7 @@ Figure 5 | Adjusted home ranges between sexes of non-subsidized and subsidized p
 
 
 Table 3. Directional means of home range after being adjusted for year, sex and sample size.
-```{r echo=FALSE, paged.print=FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 kable(ref_dfRM_sex, format = "pandoc", caption = 'Adjusted Group Means of Overall Home Ranges at Stone Canyon and Owl Head Buttes')
 ```
 
@@ -425,6 +424,8 @@ Graphical Comparisons of Sex between the two populations:
 plot(emm_s.t3, comparisons = TRUE, xlab = "Mean Home Range", ylab = "Sex")
 ```
 Figure 7 | Paiwise comparisons of sex between environments. If red arrows overlap those of others, then  there is no significant statistical difference. 
+
+
 
 
 
@@ -600,7 +601,7 @@ kable(SEAS_GRP_Means, format = "pandoc", caption = 'Raw Group Means of Seasonal 
 
 
 RMANOVA on Seasonal Home Ranges:
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 library(lme4)
 library(readr)
 library(lmerTest)
@@ -634,7 +635,7 @@ kable(SEAS_GRP_TEST, format = "pandoc", caption = 'Seasonal Means by Sex Between
 
 
 
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 # SEAS.TEST<-ggplot(SEAS_GRP_TEST,aes(x=Season,y=Home_Range_100mcp,group=Environment))+geom_point(aes(shape = factor(Sex)), size=2,position=position_dodge(.5))+geom_errorbar(aes(ymin=Home_Range_100mcp-se, ymax=Home_Range_100mcp+se),position = position_dodge(.5), width = 0.2)+ggtitle("Seasonal Means")+xlab("Season")+ylab("Area (ha) using 100% MCP")+theme(plot.title = element_text(hjust = 0.5, color="black", size=14, face="bold"))
 # 
 # SEAS.TEST<-SEAS.TEST + theme(legend.title = element_blank(),
@@ -664,7 +665,7 @@ Figure 9 | Raw seasonal means of sexes between each environment. *WORKING GRAPH.
 
 
 Adjusted Seasonal Means
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 RM.mod.Season <- lmer(Home_Range_100mcp~Environment+Season+Sex+N+Environment*Season+(1|Gila), data=seasonal)
 
 # RM.marginal <- lsmeans(RM.mod.Season, 
@@ -730,7 +731,7 @@ Figure 12 | Pairwise comparisons between seasons within each environment. Overla
 
 
 Pairwise seasonal comparisons between sexes of the subsidized population
-```{r}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 sub <- subset(seasonal, Environment == "subsidized")
 
 RM.mod.Sub <- lmer(Home_Range_100mcp~Season+Sex+N+Season*Sex+(1|Gila), data=sub)
